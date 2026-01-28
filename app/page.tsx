@@ -13,25 +13,27 @@ export default function Home() {
   return (
     <main>
       <Background />
-      <nav className="m-6 flex justify-between items-center">
-        <Link href="/" className="w-1/3">
+      <nav className="m-6 grid sm:flex justify-items-center sm:justify-between items-center">
+        <Link href="/" className="sm:w-2/3 sm:mb-0 mb-10">
           <Image src={logo} alt="logo" className="w-13 h-16" />
         </Link>
 
-        <TopicMenu />
+        <div className="flex justify-between w-full">
+          <TopicMenu />
 
-        <aside className="flex items-center justify-end gap-4 w-1/3">
-          <h1 className="text-(--secondary-foreground) text-[14px]">
-            {syncDate
-              ? `Last synced: ${syncDate.toLocaleDateString()} ${syncDate.toLocaleTimeString()}`
-              : "Not synced yet"}
-          </h1>
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSle5CxW6QjBz4FH6p5szdloz2gPoQLJ8Outg&s" //TODO: replace with actual profile image from Google Account
-            alt="profile"
-            className="w-12 h-12 rounded-full bg-(--secondary-foreground)/20"
-          />
-        </aside>
+          <aside className="grid sm:flex sm:items-center justify-items-end justify-end gap-4 w-1/3">
+            <h1 className="text-(--secondary-foreground) text-[10px] sm:text-[14px] text-end">
+              {syncDate
+                ? `Last synced: ${syncDate.toLocaleDateString()} ${syncDate.toLocaleTimeString()}`
+                : "Not synced yet"}
+            </h1>
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSle5CxW6QjBz4FH6p5szdloz2gPoQLJ8Outg&s" //TODO: replace with actual profile image from Google Account
+              alt="profile"
+              className="w-12 h-12 rounded-full bg-(--secondary-foreground)/20"
+            />
+          </aside>
+        </div>
       </nav>
     </main>
   );
