@@ -5,13 +5,13 @@ import Link from "next/link";
 import Background from "@/global/components/Background";
 import logo from "@/assets/images/logo.svg";
 import { useState } from "react";
-import TopicMenu from "./components/TopicMenu";
+import { TopicMenu, Timeline } from "./components";
 
 export default function Home() {
   const [syncDate, setSyncDate] = useState<Date | null>(new Date()); //TODO: replace with actual last sync date
 
   return (
-    <main>
+    <main className="h-[90vh] w-screen">
       <Background />
       <nav className="m-6 grid sm:flex justify-items-center sm:justify-between items-center">
         <Link href="/" className="sm:w-2/3 sm:mb-0 mb-10">
@@ -35,6 +35,7 @@ export default function Home() {
           </aside>
         </div>
       </nav>
+      <Timeline />
     </main>
   );
 }
