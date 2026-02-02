@@ -1,3 +1,4 @@
+import { Timeline } from "@/global/types";
 import { addDays, subtractDays } from "@/utils";
 import { createRef } from "react";
 import { create } from "zustand";
@@ -9,12 +10,28 @@ let isDragging = false;
 interface TimelineStore {
   startDate: Date;
   endDate: Date;
+  timelines: Timeline[];
+  setTimelines: (timelines: Timeline[]) => void;
+  selectedTimeline: Timeline | null;
+  setSelectedTimeline: (timeline: Timeline | null) => void;
   timelineRulerRef: React.RefObject<HTMLDivElement | null>;
   zoomOptions: {
     isMenuExpanded: boolean;
     level: number;
   };
+  dateSelection: {
+    year: number;
+    month: number;
+    via: "year" | "month";
+    isMenuExpanded: boolean;
+  };
   setZoomOptions: (options: { isMenuExpanded: boolean; level: number }) => void;
+  setDateSelection: (options: {
+    year?: number;
+    month?: number;
+    via?: "year" | "month";
+    isMenuExpanded: boolean;
+  }) => void;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerMove: (e: React.PointerEvent) => void;
   onPointerUp: () => void;
@@ -27,9 +44,103 @@ export const TimelineStore = create<TimelineStore>((set, get) => ({
   startDate: subtractDays(365),
   endDate: addDays(30),
   timelineRulerRef: createRef<HTMLDivElement>(),
+  timelines: [],
+  setTimelines: (timelines: Timeline[]) => {
+    set({ timelines });
+  },
+  setSelectedTimeline: (timeline: Timeline | null) => {
+    set({ selectedTimeline: timeline });
+  },
+  selectedTimeline: {
+    id: "",
+    name: "Test timeline",
+    events: [
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2026"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2025"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2024"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2023"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2022"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2021"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2020"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2019"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2018"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2017"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2016"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2015"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2014"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2013"),
+      // },
+      // {
+      //   id: "",
+      //   name: "Event 1",
+      //   initialDate: new Date("2/2/2012"),
+      // },
+    ],
+  },
   zoomOptions: {
     isMenuExpanded: false,
     level: 50,
+  },
+  dateSelection: {
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+    via: "year",
+    isMenuExpanded: false,
   },
   setZoomOptions: (options) => {
     const zoomOptions = get().zoomOptions;
@@ -38,6 +149,14 @@ export const TimelineStore = create<TimelineStore>((set, get) => ({
     }
 
     set({ zoomOptions: options });
+  },
+  setDateSelection(options) {
+    set({
+      dateSelection: {
+        ...get().dateSelection,
+        ...options,
+      },
+    });
   },
   onPointerDown: (e: React.PointerEvent) => {
     const ref = get().timelineRulerRef;

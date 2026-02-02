@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   ChevronDownIcon,
@@ -18,19 +18,24 @@ import {
   PencilIcon,
 } from "@heroicons/react/24/outline";
 import { Timeline } from "@/global/types";
+import { TimelineStore } from "@/stores/timeline-store";
 
 const TopicMenu = () => {
+  const { timelines, selectedTimeline, setTimelines, setSelectedTimeline } =
+    TimelineStore();
   const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
-  const [timelines, setTimlines] = useState<Timeline[]>([]);
-  const [selectedTimeline, setSelectedTimeline] = useState<Timeline | null>(
-    timelines.length > 0 ? timelines[0] : null,
-  );
   const [editingTimeline, setEditingTimeline] = useState<
     Timeline | undefined
   >();
   const [downloadTimeline, setDownloadTimeline] = useState<
     Timeline | undefined
   >();
+
+  useEffect(() => {
+    if (timelines && timelines.length > 0) {
+      setSelectedTimeline(timelines[0]);
+    }
+  }, []);
 
   return (
     <main className="relative w-full sm:w-fit">
@@ -54,11 +59,11 @@ const TopicMenu = () => {
                 <h1
                   className="font-semibold"
                   onClick={() => {
-                    setTimlines((prev) => [
-                      ...prev,
+                    setTimelines([
+                      ...timelines,
                       {
                         id: crypto.randomUUID(),
-                        name: `Timeline ${prev.length + 1}`,
+                        name: `Timeline ${timelines.length + 1}`,
                         events: [],
                       },
                     ]);
@@ -105,8 +110,8 @@ const TopicMenu = () => {
                       <CheckCircleIcon
                         onClick={() => {
                           if (editingTimeline.name.trim() === "") return; //TODO: Show error
-                          setTimlines((prev) =>
-                            prev.map((timeline) =>
+                          setTimelines(
+                            timelines.map((timeline) =>
                               timeline.id === editingTimeline.id
                                 ? editingTimeline
                                 : timeline,
@@ -118,8 +123,8 @@ const TopicMenu = () => {
                       />
                       <TrashIcon
                         onClick={() => {
-                          setTimlines((prev) =>
-                            prev.filter(
+                          setTimelines(
+                            timelines.filter(
                               (prevTimeline) => prevTimeline.id !== timeline.id,
                             ),
                           );
