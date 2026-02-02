@@ -1,10 +1,5 @@
 import { TimelineStore } from "@/stores/timeline-store";
-import {
-  addDays,
-  addHours,
-  differenceInDays,
-  differenceInHours,
-} from "@/utils";
+import { addDays, differenceInDays } from "@/utils";
 
 const Timeline = () => {
   const {
@@ -15,6 +10,7 @@ const Timeline = () => {
     onPointerUp,
     onScroll,
     timelineRulerRef: ref,
+    zoomOptions,
   } = TimelineStore();
 
   return (
@@ -27,7 +23,7 @@ const Timeline = () => {
       className="w-full h-[64vh] grid place-items-center overflow-x-hidden cursor-grab active:cursor-grabbing select-none"
     >
       <div className="relative w-full ">
-        <div className="flex items-end">
+        <div className="flex items-end px-2">
           {Array.from(
             { length: differenceInDays(startDate, endDate) + 1 },
             (_, index) => {
@@ -35,7 +31,10 @@ const Timeline = () => {
               return index % 10 === 0 ? (
                 <div
                   key={date.toISOString()}
-                  className="relative mx-4 group/date-tick grid place-items-center"
+                  className="relative group/date-tick grid place-items-center"
+                  style={{
+                    marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
+                  }}
                 >
                   <div className="w-1 h-9 bg-(--secondary-foreground)/20 group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 rounded-t-full cursor-pointer duration-300 transition-all" />
 
@@ -46,7 +45,10 @@ const Timeline = () => {
               ) : (
                 <div
                   key={date.toISOString()}
-                  className="relative mx-4 group/date-tick grid place-items-center"
+                  className="relative group/date-tick grid place-items-center"
+                  style={{
+                    marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
+                  }}
                 >
                   <div
                     key={date.toISOString()}

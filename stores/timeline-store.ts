@@ -10,6 +10,11 @@ interface TimelineStore {
   startDate: Date;
   endDate: Date;
   timelineRulerRef: React.RefObject<HTMLDivElement | null>;
+  zoomOptions: {
+    isMenuExpanded: boolean;
+    level: number;
+  };
+  setZoomOptions: (options: { isMenuExpanded: boolean; level: number }) => void;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerMove: (e: React.PointerEvent) => void;
   onPointerUp: () => void;
@@ -22,7 +27,18 @@ export const TimelineStore = create<TimelineStore>((set, get) => ({
   startDate: subtractDays(365),
   endDate: addDays(30),
   timelineRulerRef: createRef<HTMLDivElement>(),
+  zoomOptions: {
+    isMenuExpanded: false,
+    level: 50,
+  },
+  setZoomOptions: (options) => {
+    const zoomOptions = get().zoomOptions;
 
+    if (options.level !== zoomOptions.level) {
+    }
+
+    set({ zoomOptions: options });
+  },
   onPointerDown: (e: React.PointerEvent) => {
     const ref = get().timelineRulerRef;
     isDragging = true;

@@ -9,13 +9,10 @@ import {
 import { useState, useEffect, useRef } from "react";
 
 const TimelineControls = () => {
-  const { onLeftPan, onRightPan } = TimelineStore();
+  const { onLeftPan, onRightPan, zoomOptions, setZoomOptions } =
+    TimelineStore();
   const sliderRef = useRef(null);
   const tooltipRef = useRef(null);
-  const [zoomOptions, setZoomOptions] = useState({
-    isMenuExpanded: false,
-    level: 50,
-  });
 
   useEffect(() => {
     const slider = sliderRef.current as HTMLInputElement | null;
@@ -45,10 +42,10 @@ const TimelineControls = () => {
       <div className="grid sm:justify-items-center">
         <MagnifyingGlassIcon
           onClick={() =>
-            setZoomOptions((prev) => ({
-              ...prev,
-              isMenuExpanded: !prev.isMenuExpanded,
-            }))
+            setZoomOptions({
+              isMenuExpanded: !zoomOptions.isMenuExpanded,
+              level: zoomOptions.level,
+            })
           }
           className={`text-white h-7 w-7 cursor-pointer py-1 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 ${zoomOptions.isMenuExpanded ? "bg-(--secondary-foreground)/50" : ""} transition-all duration-100 rounded-full`}
         />
@@ -70,7 +67,10 @@ const TimelineControls = () => {
                 const value = Number(target.value);
 
                 target.style.setProperty("--value", `${value}%`);
-                setZoomOptions((prev) => ({ ...prev, level: value }));
+                setZoomOptions({
+                  isMenuExpanded: zoomOptions.isMenuExpanded,
+                  level: value,
+                });
               }}
               className="w-full h-2 rounded-lg
                         bg-[linear-gradient(to_right,#ffffff_var(--value),#616161_var(--value))]
