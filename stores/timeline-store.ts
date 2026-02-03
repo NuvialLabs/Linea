@@ -9,7 +9,9 @@ let isDragging = false;
 
 interface TimelineStore {
   startDate: Date;
+  setStartDate: (startDate: Date) => void;
   endDate: Date;
+  setEndDate: (endDate: Date) => void;
   timelines: Timeline[];
   setTimelines: (timelines: Timeline[]) => void;
   selectedTimeline: Timeline | null;
@@ -42,96 +44,104 @@ interface TimelineStore {
 
 export const TimelineStore = create<TimelineStore>((set, get) => ({
   startDate: subtractDays(365),
+  setStartDate: (startDate: Date) => {
+    set({ startDate });
+  },
   endDate: addDays(30),
+  setEndDate: (endDate: Date) => {
+    set({ endDate });
+  },
   timelineRulerRef: createRef<HTMLDivElement>(),
-  timelines: [],
+  timelines: [
+    {
+      id: "",
+      name: "Test timeline",
+      events: [
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2026"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2025"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2024"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2023"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2022"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2021"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2020"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2019"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2018"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2017"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2016"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2015"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2014"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2013"),
+        },
+        {
+          id: "",
+          name: "Event 1",
+          initialDate: new Date("2/2/2012"),
+        },
+      ],
+    },
+  ],
   setTimelines: (timelines: Timeline[]) => {
     set({ timelines });
   },
   setSelectedTimeline: (timeline: Timeline | null) => {
     set({ selectedTimeline: timeline });
   },
-  selectedTimeline: {
-    id: "",
-    name: "Test timeline",
-    events: [
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2026"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2025"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2024"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2023"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2022"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2021"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2020"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2019"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2018"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2017"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2016"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2015"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2014"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2013"),
-      // },
-      // {
-      //   id: "",
-      //   name: "Event 1",
-      //   initialDate: new Date("2/2/2012"),
-      // },
-    ],
-  },
+  selectedTimeline: null,
   zoomOptions: {
     isMenuExpanded: false,
     level: 50,

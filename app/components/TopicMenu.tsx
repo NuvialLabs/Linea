@@ -19,10 +19,17 @@ import {
 } from "@heroicons/react/24/outline";
 import { Timeline } from "@/global/types";
 import { TimelineStore } from "@/stores/timeline-store";
+import { addDays, subtractDays } from "@/utils";
 
 const TopicMenu = () => {
-  const { timelines, selectedTimeline, setTimelines, setSelectedTimeline } =
-    TimelineStore();
+  const {
+    timelines,
+    selectedTimeline,
+    setTimelines,
+    setSelectedTimeline,
+    setStartDate,
+    setEndDate,
+  } = TimelineStore();
   const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
   const [editingTimeline, setEditingTimeline] = useState<
     Timeline | undefined
@@ -33,7 +40,19 @@ const TopicMenu = () => {
 
   useEffect(() => {
     if (timelines && timelines.length > 0) {
-      setSelectedTimeline(timelines[0]);
+      const timeline = timelines[0];
+      const events = timeline.events;
+
+      setSelectedTimeline(timeline);
+      setStartDate(subtractDays(30, events[events.length - 1].initialDate));
+      setEndDate(
+        addDays(
+          30,
+          events[0].initialDate < new Date()
+            ? new Date()
+            : events[0].initialDate,
+        ),
+      );
     }
   }, []);
 

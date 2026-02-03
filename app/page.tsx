@@ -8,14 +8,20 @@ import { useState } from "react";
 import { TopicMenu, Timeline, TimelineControls } from "./components";
 
 export default function Home() {
-  const [syncDate, setSyncDate] = useState<Date | null>(new Date()); //TODO: replace with actual last sync date
+  const [syncDate, setSyncDate] = useState<Date | null>(new Date("2/3/2026")); //TODO: replace with actual last sync date
 
   return (
     <main className=" w-screen grid place-items-between justify-items-center">
       <Background />
       <nav className="p-6 grid w-full sm:flex justify-items-center sm:justify-between items-center">
         <Link href="/" className="sm:w-2/3 sm:mb-0 mb-10">
-          <Image src={logo} alt="logo" className="w-13 h-16" />
+          <Image
+            src={logo}
+            alt="logo"
+            className="w-13 h-16"
+            width={52}
+            height={64}
+          />
         </Link>
 
         <div className="flex justify-between w-full">

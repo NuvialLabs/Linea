@@ -28,6 +28,9 @@ const Timeline = () => {
             { length: differenceInDays(startDate, endDate) + 1 },
             (_, index) => {
               const date = addDays(index, startDate);
+              const yearHasStarted =
+                date.getMonth() === 0 && date.getDate() === 1;
+
               return index % 10 === 0 ? (
                 <div
                   key={date.toISOString()}
@@ -36,10 +39,15 @@ const Timeline = () => {
                     marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
                   }}
                 >
-                  <div className="w-1 h-9 bg-(--secondary-foreground)/20 group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 rounded-t-full cursor-pointer duration-300 transition-all" />
+                  <div
+                    className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-9 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 rounded-t-full cursor-pointer duration-300 transition-all`}
+                  />
 
-                  <span className="absolute -bottom-7 text-(--secondary-foreground)/70 text-xs cursor-pointer">
-                    {date.getMonth() + 1}/{date.getDate()}
+                  <span
+                    className={`absolute ${yearHasStarted ? "-bottom-9" : "-bottom-8"} text-(--secondary-foreground)/70 text-xs cursor-pointer text-center`}
+                  >
+                    {date.getMonth() + 1}/{date.getDate()} <br />
+                    {yearHasStarted ? date.getFullYear() : ""}
                   </span>
                 </div>
               ) : (
@@ -52,10 +60,13 @@ const Timeline = () => {
                 >
                   <div
                     key={date.toISOString()}
-                    className="w-1 h-3 bg-(--secondary-foreground)/20 group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-200 rounded-t-full cursor-pointer duration-300 transition-all"
+                    className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-3 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-200 rounded-t-full cursor-pointer duration-300 transition-all`}
                   />
-                  <span className="absolute -bottom-7 text-(--secondary-foreground)/70 text-xs group-hover/date-tick:opacity-100 opacity-0 cursor-pointer">
-                    {date.getMonth() + 1}/{date.getDate()}
+                  <span
+                    className={`absolute ${yearHasStarted ? "-bottom-16" : "-bottom-8"} text-(--secondary-foreground)/70 text-xs group-hover/date-tick:opacity-100 opacity-0 cursor-pointer text-center`}
+                  >
+                    {date.getMonth() + 1}/{date.getDate()} <br />
+                    {yearHasStarted ? date.getFullYear() : ""}
                   </span>
                 </div>
               );
