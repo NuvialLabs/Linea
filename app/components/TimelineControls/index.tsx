@@ -106,7 +106,7 @@ const TimelineControls = () => {
               </div>
 
               <div
-                className={` ${(selectedTimeline?.events ?? []).length > 2 || dateSelection.via === "month" ? "grid grid-cols-3" : "flex"} gap-4 justify-center place-items-center overflow-y-auto max-h-40 min-h-10`}
+                className={` ${(selectedTimeline?.events ?? []).length > 2 || dateSelection.via === "month" ? "grid grid-cols-3" : "flex"} gap-4 justify-center place-items-center overflow-y-auto scrollbar-ui scrollbar-thin scrollbar-thumb max-h-40 min-h-10`}
               >
                 {dateSelection.via === "year" ? (
                   selectedTimeline !== null &&
