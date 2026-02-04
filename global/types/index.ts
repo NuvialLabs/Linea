@@ -13,3 +13,10 @@ export type Event = {
   description?: string;
   color?: string;
 };
+
+export type DateSelection = {
+  year: number;
+  month: number;
+  via?: "year" | "month";
+  isMenuExpanded?: boolean;
+};

@@ -58,7 +58,7 @@ const TopicMenu = () => {
 
       setTimeout(() => {
         slideToDate(dateSelection.month, dateSelection.year);
-      }, 3000); //FIXME: Optimize - Slide once all marks are rendered
+      }, 100); //FIXME: Optimize - Slide once all marks are rendered
     }
   }, [timelines]);
 

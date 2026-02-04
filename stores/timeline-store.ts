@@ -1,5 +1,6 @@
-import { Timeline } from "@/global/types";
+import { DateSelection, Timeline } from "@/global/types";
 import { addDays, subtractDays } from "@/utils/date_methods";
+import { updateCurrentDateFromScroll } from "@/utils/slider_methods";
 import { createRef } from "react";
 import { create } from "zustand";
 
@@ -21,12 +22,7 @@ interface TimelineStore {
     isMenuExpanded: boolean;
     level: number;
   };
-  dateSelection: {
-    year: number;
-    month: number;
-    via: "year" | "month";
-    isMenuExpanded: boolean;
-  };
+  dateSelection: DateSelection;
   setZoomOptions: (options: { isMenuExpanded: boolean; level: number }) => void;
   setDateSelection: (options: {
     year?: number;
@@ -148,7 +144,7 @@ export default create<TimelineStore>((set, get) => ({
   },
   dateSelection: {
     year: new Date().getFullYear(),
-    month: new Date().getMonth(),
+    month: new Date().getMonth() + 1,
     via: "year",
     isMenuExpanded: false,
   },
@@ -181,6 +177,14 @@ export default create<TimelineStore>((set, get) => ({
     if (!isDragging) return;
     const dx = e.clientX - startX;
     ref.current!.scrollLeft = startScrollLeft - dx;
+
+    requestAnimationFrame(() => {
+      updateCurrentDateFromScroll(
+        get().timelineRulerRef,
+        get().dateSelection,
+        get().setDateSelection,
+      );
+    });
   },
 
   onPointerUp: () => {
@@ -189,28 +193,59 @@ export default create<TimelineStore>((set, get) => ({
 
   onScroll: (e: React.WheelEvent<HTMLDivElement>) => {
     const ref = get().timelineRulerRef;
-    if (ref.current) {
-      ref.current.scrollLeft += e.deltaY + e.deltaX;
-    }
+
+    if (!ref.current) return;
+
+    ref.current.scrollLeft += e.deltaY + e.deltaX;
+
+    requestAnimationFrame(() => {
+      updateCurrentDateFromScroll(
+        get().timelineRulerRef,
+        get().dateSelection,
+        get().setDateSelection,
+      );
+    });
   },
 
   onLeftPan: () => {
     const ref = get().timelineRulerRef;
-    if (ref.current) {
-      ref.current.scrollBy({
-        left: -1500,
-        behavior: "smooth",
+
+    if (!ref.current) return;
+
+    ref.current.scrollBy({
+      left: -1500,
+      behavior: "smooth",
+    });
+
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        updateCurrentDateFromScroll(
+          get().timelineRulerRef,
+          get().dateSelection,
+          get().setDateSelection,
+        );
       });
-    }
+    }, 300);
   },
 
   onRightPan: () => {
     const ref = get().timelineRulerRef;
-    if (ref.current) {
-      ref.current.scrollBy({
-        left: 1500,
-        behavior: "smooth",
+
+    if (!ref.current) return;
+
+    ref.current.scrollBy({
+      left: 1500,
+      behavior: "smooth",
+    });
+
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        updateCurrentDateFromScroll(
+          get().timelineRulerRef,
+          get().dateSelection,
+          get().setDateSelection,
+        );
       });
-    }
+    }, 300);
   },
 }));
