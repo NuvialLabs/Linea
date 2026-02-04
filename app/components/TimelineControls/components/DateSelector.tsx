@@ -114,7 +114,7 @@ const DateSelector = () => {
                     onClick={() => {
                       setDateSelection({
                         isMenuExpanded: false,
-                        month: month.index,
+                        month: month.index + 1,
                       });
                       slideToDate(month.index + 1, dateSelection.year);
                     }}
