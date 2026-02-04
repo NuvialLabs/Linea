@@ -1,4 +1,4 @@
-import { TimelineStore } from "@/stores/timeline-store";
+import TimelineStore from "@/stores/timeline-store";
 import { addDays, differenceInDays } from "@/utils";
 
 const Timeline = () => {

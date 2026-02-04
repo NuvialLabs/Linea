@@ -18,7 +18,7 @@ import {
   PencilIcon,
 } from "@heroicons/react/24/outline";
 import { Timeline } from "@/global/types";
-import { TimelineStore } from "@/stores/timeline-store";
+import TimelineStore from "@/stores/timeline-store";
 import { addDays, subtractDays } from "@/utils";
 
 const TopicMenu = () => {

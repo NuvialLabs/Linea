@@ -42,7 +42,7 @@ interface TimelineStore {
   onRightPan: () => void;
 }
 
-export const TimelineStore = create<TimelineStore>((set, get) => ({
+export default create<TimelineStore>((set, get) => ({
   startDate: subtractDays(365),
   setStartDate: (startDate: Date) => {
     set({ startDate });
