@@ -1,5 +1,6 @@
 import { MONTHS } from "@/global/constants";
 import TimelineStore from "@/stores/timeline-store";
+import { slideToDate } from "@/utils/slider_methods";
 
 const DateSelector = () => {
   const { dateSelection, setDateSelection, selectedTimeline } = TimelineStore();
@@ -79,6 +80,10 @@ const DateSelector = () => {
                           isMenuExpanded: false,
                           year: event.initialDate.getFullYear(),
                         });
+                        slideToDate(
+                          dateSelection.month + 1,
+                          event.initialDate.getFullYear(),
+                        );
                       }}
                     >
                       {event.initialDate.toLocaleDateString("en-US", {
@@ -92,6 +97,7 @@ const DateSelector = () => {
                     onClick={() => {
                       setDateSelection({
                         isMenuExpanded: false,
+                        year: new Date().getFullYear(),
                       });
                     }}
                   >
@@ -110,6 +116,7 @@ const DateSelector = () => {
                         isMenuExpanded: false,
                         month: month.index,
                       });
+                      slideToDate(month.index + 1, dateSelection.year);
                     }}
                   >
                     {month.name}

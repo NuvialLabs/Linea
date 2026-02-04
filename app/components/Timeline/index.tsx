@@ -1,5 +1,5 @@
 import TimelineStore from "@/stores/timeline-store";
-import { addDays, differenceInDays } from "@/utils";
+import { addDays, differenceInDays } from "@/utils/date_methods";
 
 const Timeline = () => {
   const {
@@ -25,7 +25,7 @@ const Timeline = () => {
       <div className="relative w-full ">
         <div className="flex items-end px-2">
           {Array.from(
-            { length: differenceInDays(startDate, endDate) + 1 },
+            { length: differenceInDays(startDate, endDate) + 1 }, //FIXME: Optimize rendering
             (_, index) => {
               const date = addDays(index, startDate);
               const yearHasStarted =
@@ -33,7 +33,8 @@ const Timeline = () => {
 
               return index % 10 === 0 ? (
                 <div
-                  key={date.toISOString()}
+                  key={date.toISOString().split("T")[0]}
+                  id={date.toISOString().split("T")[0]}
                   className="relative group/date-tick grid place-items-center"
                   style={{
                     marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
@@ -52,14 +53,14 @@ const Timeline = () => {
                 </div>
               ) : (
                 <div
-                  key={date.toISOString()}
+                  key={date.toISOString().split("T")[0]}
+                  id={date.toISOString().split("T")[0]}
                   className="relative group/date-tick grid place-items-center"
                   style={{
                     marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
                   }}
                 >
                   <div
-                    key={date.toISOString()}
                     className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-3 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-200 rounded-t-full cursor-pointer duration-300 transition-all`}
                   />
                   <span

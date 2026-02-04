@@ -19,7 +19,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { Timeline } from "@/global/types";
 import TimelineStore from "@/stores/timeline-store";
-import { addDays, subtractDays } from "@/utils";
+import { addDays, subtractDays } from "@/utils/date_methods";
+import { slideToDate } from "@/utils/slider_methods";
 
 const TopicMenu = () => {
   const {
@@ -29,6 +30,7 @@ const TopicMenu = () => {
     setSelectedTimeline,
     setStartDate,
     setEndDate,
+    dateSelection,
   } = TimelineStore();
   const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
   const [editingTimeline, setEditingTimeline] = useState<
@@ -53,8 +55,12 @@ const TopicMenu = () => {
             : events[0].initialDate,
         ),
       );
+
+      setTimeout(() => {
+        slideToDate(dateSelection.month, dateSelection.year);
+      }, 3000); //FIXME: Optimize - Slide once all marks are rendered
     }
-  }, []);
+  }, [timelines]);
 
   return (
     <main className="relative w-full sm:w-fit">

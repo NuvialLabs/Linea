@@ -1,5 +1,5 @@
 import { Timeline } from "@/global/types";
-import { addDays, subtractDays } from "@/utils";
+import { addDays, subtractDays } from "@/utils/date_methods";
 import { createRef } from "react";
 import { create } from "zustand";
 
@@ -148,7 +148,7 @@ export default create<TimelineStore>((set, get) => ({
   },
   dateSelection: {
     year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
+    month: new Date().getMonth(),
     via: "year",
     isMenuExpanded: false,
   },
