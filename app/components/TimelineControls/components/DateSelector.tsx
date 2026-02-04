@@ -107,21 +107,26 @@ const DateSelector = () => {
                   </button>
                 )
               ) : (
-                MONTHS.map((month, index) => (
-                  <button
-                    key={index}
-                    className="text-[24px] text-(--accent) cursor-pointer"
-                    onClick={() => {
-                      setDateSelection({
-                        isMenuExpanded: false,
-                        month: month.index + 1,
-                      });
-                      slideToDate(month.index + 1, dateSelection.year);
-                    }}
-                  >
-                    {month.name}
-                  </button>
-                ))
+                MONTHS.map(
+                  (
+                    month,
+                    index, //TODO: Filter months which are not available in the timeline
+                  ) => (
+                    <button
+                      key={index}
+                      className="text-[24px] text-(--accent) cursor-pointer"
+                      onClick={() => {
+                        setDateSelection({
+                          isMenuExpanded: false,
+                          month: month.index + 1,
+                        });
+                        slideToDate(month.index + 1, dateSelection.year);
+                      }}
+                    >
+                      {month.name}
+                    </button>
+                  ),
+                )
               )}
             </div>
           </div>
