@@ -7,6 +7,8 @@ import { create } from "zustand";
 let startX = 0;
 let startScrollLeft = 0;
 let isDragging = false;
+let scrollEndTimeout: number | null = null;
+let rafId: number | null = null;
 
 interface TimelineStore {
   startDate: Date;
@@ -151,9 +153,6 @@ export default create<TimelineStore>((set, get) => ({
   setZoomOptions: (options) => {
     const zoomOptions = get().zoomOptions;
 
-    if (options.level !== zoomOptions.level) {
-    }
-
     set({ zoomOptions: options });
   },
   setDateSelection(options) {
@@ -177,6 +176,10 @@ export default create<TimelineStore>((set, get) => ({
     if (!isDragging) return;
     const dx = e.clientX - startX;
     ref.current!.scrollLeft = startScrollLeft - dx;
+  },
+
+  onPointerUp: () => {
+    isDragging = false;
 
     requestAnimationFrame(() => {
       updateCurrentDateFromScroll(
@@ -185,10 +188,6 @@ export default create<TimelineStore>((set, get) => ({
         get().setDateSelection,
       );
     });
-  },
-
-  onPointerUp: () => {
-    isDragging = false;
   },
 
   onScroll: (e: React.WheelEvent<HTMLDivElement>) => {
@@ -198,13 +197,23 @@ export default create<TimelineStore>((set, get) => ({
 
     ref.current.scrollLeft += e.deltaY + e.deltaX;
 
-    requestAnimationFrame(() => {
-      updateCurrentDateFromScroll(
-        get().timelineRulerRef,
-        get().dateSelection,
-        get().setDateSelection,
-      );
-    });
+    if (scrollEndTimeout !== null) {
+      clearTimeout(scrollEndTimeout);
+    }
+
+    scrollEndTimeout = window.setTimeout(() => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+
+      rafId = requestAnimationFrame(() => {
+        updateCurrentDateFromScroll(
+          get().timelineRulerRef,
+          get().dateSelection,
+          get().setDateSelection,
+        );
+      });
+    }, 150);
   },
 
   onLeftPan: () => {
