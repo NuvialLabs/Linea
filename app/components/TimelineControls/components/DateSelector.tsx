@@ -4,9 +4,20 @@ import { slideToDate } from "@/utils/slider_methods";
 
 const DateSelector = () => {
   const { dateSelection, setDateSelection, selectedTimeline } = TimelineStore();
+  const events = selectedTimeline?.events ?? [];
 
   const getBottomOffset = () => {
-    if (dateSelection.via === "month") return "-40px";
+    if (dateSelection.via === "month") {
+      const months = getValidMonths();
+
+      if (months.length <= 3) return "25px";
+
+      if (months.length <= 6) return "5px";
+
+      if (months.length <= 9) return "-30px";
+
+      return "-40px";
+    }
 
     if (selectedTimeline === null || selectedTimeline.events.length <= 3)
       return "25px";
@@ -16,6 +27,18 @@ const DateSelector = () => {
     if (selectedTimeline.events.length <= 9) return "-30px";
 
     return "-40px";
+  };
+
+  const getValidMonths = () => {
+    if (events.length === 0) return MONTHS;
+
+    const { year } = dateSelection;
+    const lastValidMonth = events[0].initialDate.getMonth();
+    const lastValidYear = events[0].initialDate.getFullYear();
+
+    return year === lastValidYear
+      ? MONTHS.filter((_, index) => index <= lastValidMonth)
+      : MONTHS;
   };
 
   return (
@@ -66,12 +89,11 @@ const DateSelector = () => {
             </div>
 
             <div
-              className={` ${(selectedTimeline?.events ?? []).length > 2 || dateSelection.via === "month" ? "grid grid-cols-3" : "flex"} gap-4 justify-center place-items-center overflow-y-auto scrollbar-ui scrollbar-thin scrollbar-thumb max-h-40 min-h-10`}
+              className={` ${events.length > 2 || dateSelection.via === "month" ? "grid grid-cols-3" : "flex"} gap-4 justify-center place-items-center overflow-y-auto scrollbar-ui scrollbar-thin scrollbar-thumb max-h-40 min-h-10`}
             >
               {dateSelection.via === "year" ? (
-                selectedTimeline !== null &&
-                selectedTimeline.events.length > 0 ? (
-                  selectedTimeline.events.map((event, index) => (
+                events.length > 0 ? (
+                  events.map((event, index) => (
                     <button
                       key={index}
                       className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.year === event.initialDate.getFullYear() ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
@@ -107,26 +129,21 @@ const DateSelector = () => {
                   </button>
                 )
               ) : (
-                MONTHS.map(
-                  (
-                    month,
-                    index, //TODO: Filter months which are not available in the timeline
-                  ) => (
-                    <button
-                      key={index}
-                      className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.month === month.index + 1 ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
-                      onClick={() => {
-                        setDateSelection({
-                          isMenuExpanded: false,
-                          month: month.index + 1,
-                        });
-                        slideToDate(month.index + 1, dateSelection.year);
-                      }}
-                    >
-                      {month.name}
-                    </button>
-                  ),
-                )
+                getValidMonths().map((month, index) => (
+                  <button
+                    key={index}
+                    className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.month === month.index + 1 ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
+                    onClick={() => {
+                      setDateSelection({
+                        isMenuExpanded: false,
+                        month: month.index + 1,
+                      });
+                      slideToDate(month.index + 1, dateSelection.year);
+                    }}
+                  >
+                    {month.name}
+                  </button>
+                ))
               )}
             </div>
           </div>
