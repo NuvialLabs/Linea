@@ -74,7 +74,7 @@ const DateSelector = () => {
                   selectedTimeline.events.map((event, index) => (
                     <button
                       key={index}
-                      className="text-[24px] text-(--accent) cursor-pointer"
+                      className="text-sm sm:text-[24px] text-(--accent) cursor-pointer"
                       onClick={() => {
                         setDateSelection({
                           isMenuExpanded: false,
@@ -93,7 +93,7 @@ const DateSelector = () => {
                   ))
                 ) : (
                   <button
-                    className="text-[24px] text-(--accent) cursor-pointer"
+                    className="text-sm sm:text-[24px] text-(--accent) cursor-pointer"
                     onClick={() => {
                       setDateSelection({
                         isMenuExpanded: false,
@@ -114,7 +114,7 @@ const DateSelector = () => {
                   ) => (
                     <button
                       key={index}
-                      className="text-[24px] text-(--accent) cursor-pointer"
+                      className="text-sm sm:text-[24px] text-(--accent) cursor-pointer"
                       onClick={() => {
                         setDateSelection({
                           isMenuExpanded: false,

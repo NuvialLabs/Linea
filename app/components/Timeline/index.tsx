@@ -1,5 +1,6 @@
 import TimelineStore from "@/stores/timeline-store";
 import { addDays, differenceInDays } from "@/utils/date_methods";
+import { useEffect } from "react";
 
 const Timeline = () => {
   const {
@@ -13,6 +14,44 @@ const Timeline = () => {
     zoomOptions,
   } = TimelineStore();
 
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let startX = 0;
+    let scrollLeft = 0;
+    let isDragging = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      isDragging = true;
+      startX = e.touches[0].pageX;
+      scrollLeft = el.scrollLeft;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
+
+      const x = e.touches[0].pageX;
+      const walk = startX - x;
+      el.scrollLeft = scrollLeft + walk;
+    };
+
+    const onTouchEnd = () => {
+      isDragging = false;
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd);
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
+
   return (
     <section
       ref={ref}
@@ -20,7 +59,7 @@ const Timeline = () => {
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onWheel={onScroll}
-      className="w-full h-[64vh] grid place-items-center overflow-x-hidden cursor-grab active:cursor-grabbing select-none"
+      className="w-full h-[64vh] grid place-items-center overflow-x-hidden cursor-grab active:cursor-grabbing select-none touch-pan-x"
     >
       <div className="relative w-full ">
         <div className="flex items-end px-2">

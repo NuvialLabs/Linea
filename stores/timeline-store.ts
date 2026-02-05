@@ -151,8 +151,6 @@ export default create<TimelineStore>((set, get) => ({
     isMenuExpanded: false,
   },
   setZoomOptions: (options) => {
-    const zoomOptions = get().zoomOptions;
-
     set({ zoomOptions: options });
   },
   setDateSelection(options) {
@@ -168,14 +166,19 @@ export default create<TimelineStore>((set, get) => ({
     isDragging = true;
     startX = e.clientX;
     startScrollLeft = ref.current!.scrollLeft;
-    ref.current!.setPointerCapture(e.pointerId);
+
+    if (e.pointerType === "mouse") {
+      ref.current!.setPointerCapture(e.pointerId);
+    }
   },
 
   onPointerMove: (e: React.PointerEvent) => {
     const ref = get().timelineRulerRef;
-    if (!isDragging) return;
+    if (!isDragging || !ref.current) return;
+
     const dx = e.clientX - startX;
-    ref.current!.scrollLeft = startScrollLeft - dx;
+
+    ref.current.scrollLeft = startScrollLeft - dx;
   },
 
   onPointerUp: () => {
