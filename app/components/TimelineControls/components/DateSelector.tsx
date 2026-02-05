@@ -74,7 +74,7 @@ const DateSelector = () => {
                   selectedTimeline.events.map((event, index) => (
                     <button
                       key={index}
-                      className="text-sm sm:text-[24px] text-(--accent) cursor-pointer"
+                      className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.year === event.initialDate.getFullYear() ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
                       onClick={() => {
                         setDateSelection({
                           isMenuExpanded: false,
@@ -114,7 +114,7 @@ const DateSelector = () => {
                   ) => (
                     <button
                       key={index}
-                      className="text-sm sm:text-[24px] text-(--accent) cursor-pointer"
+                      className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.month === month.index + 1 ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
                       onClick={() => {
                         setDateSelection({
                           isMenuExpanded: false,
