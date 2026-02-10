@@ -22,7 +22,7 @@ import TimelineStore from "@/stores/timeline-store";
 import { addDays, subtractDays } from "@/utils/date_methods";
 import { slideToDate } from "@/utils/slider_methods";
 
-const TopicMenu = () => {
+const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const {
     timelines,
     selectedTimeline,
@@ -42,6 +42,7 @@ const TopicMenu = () => {
 
   useEffect(() => {
     if (timelines && timelines.length > 0) {
+      //TODO: Implement timeline selection for embedded view
       const timeline = timelines[0];
       const events = timeline.events;
 
@@ -65,14 +66,16 @@ const TopicMenu = () => {
   return (
     <main className="relative w-full sm:w-fit">
       <div
-        className="flex items-center cursor-pointer"
-        onClick={() => setIsMenuExpanded(!isMenuExpanded)}
+        className={`flex items-center ${isEmbedded ? "" : "cursor-pointer"}`}
+        onClick={() => (isEmbedded ? null : setIsMenuExpanded(!isMenuExpanded))}
       >
         <h1 className="text-(--accent) font-bold text-[24px] md:text-[36px] text-center">
           {selectedTimeline ? selectedTimeline.name : "Select Timeline"}
         </h1>
 
-        <ChevronDownIcon className="w-6 h-6 ml-2 text-(--accent)" />
+        {isEmbedded ? null : (
+          <ChevronDownIcon className="w-6 h-6 ml-2 text-(--accent)" />
+        )}
       </div>
 
       {isMenuExpanded && (

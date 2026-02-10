@@ -25,7 +25,7 @@ export default function Home() {
         </Link>
 
         <div className="flex justify-between w-full">
-          <TopicMenu />
+          <TopicMenu isEmbedded={false} />
 
           <aside className="grid sm:flex sm:items-center justify-items-end justify-end gap-4 w-1/3">
             <h1 className="text-(--secondary-foreground) text-[10px] sm:text-[14px] text-end">
@@ -42,7 +42,7 @@ export default function Home() {
         </div>
       </nav>
       <Timeline />
-      <TimelineControls />
+      <TimelineControls isEmbedded={false} />
     </main>
   );
 }
