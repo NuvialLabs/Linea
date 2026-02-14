@@ -1,6 +1,8 @@
 import TimelineStore from "@/stores/timeline-store";
 import { addDays, differenceInDays } from "@/utils/date_methods";
 import { useEffect } from "react";
+import { PointMark } from "../Marks";
+import DateTick from "./components/DateTick";
 
 const Timeline = () => {
   const {
@@ -11,7 +13,7 @@ const Timeline = () => {
     onPointerUp,
     onScroll,
     timelineRulerRef: ref,
-    zoomOptions,
+    selectedTimeline,
   } = TimelineStore();
 
   useEffect(() => {
@@ -69,53 +71,27 @@ const Timeline = () => {
               const date = addDays(index, startDate);
               const yearHasStarted =
                 date.getMonth() === 0 && date.getDate() === 1;
+              const event = selectedTimeline?.events.find(
+                (event) =>
+                  event.initialDate.getDate() === date.getDate() &&
+                  event.initialDate.getMonth() === date.getMonth() &&
+                  event.initialDate.getFullYear() === date.getFullYear(),
+              );
 
-              return index % 10 === 0 ? (
-                <div
-                  key={date.toISOString().split("T")[0]}
-                  id={date.toISOString().split("T")[0]}
-                  className="relative group/date-tick grid place-items-center"
-                  style={{
-                    marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
-                  }}
-                >
-                  <div
-                    className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-9 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 rounded-t-full cursor-pointer duration-300 transition-all`}
-                  />
-
-                  <h1 className="wrap-break-word text-[8px] font-bold absolute w-1">
-                    {yearHasStarted ? date.getFullYear() : ""}
-                  </h1>
-
-                  <span
-                    className={`absolute ${yearHasStarted ? "-bottom-10" : "-bottom-8"} text-(--secondary-foreground)/70 text-xs cursor-pointer text-center`}
-                  >
-                    {date.getMonth() + 1}/{date.getDate()}
-                  </span>
-                </div>
+              return event ? (
+                <PointMark
+                  event={event}
+                  isExpandable={
+                    (event?.description?.length ?? 0) > 82 ||
+                    event.link !== undefined
+                  }
+                />
               ) : (
-                <div
-                  key={date.toISOString().split("T")[0]}
-                  id={date.toISOString().split("T")[0]}
-                  className="relative group/date-tick grid place-items-center"
-                  style={{
-                    marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
-                  }}
-                >
-                  <div
-                    className={`${yearHasStarted ? "h-16 w-2 bg-(--accent)" : "h-3 w-1 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-200 rounded-t-full cursor-pointer duration-300 transition-all`}
-                  />
-
-                  <h1 className="wrap-break-word text-[8px] font-bold absolute w-1">
-                    {yearHasStarted ? date.getFullYear() : ""}
-                  </h1>
-
-                  <span
-                    className={`absolute ${yearHasStarted ? "-bottom-14" : "-bottom-8"} text-(--secondary-foreground)/70 text-xs group-hover/date-tick:opacity-100 opacity-0 cursor-pointer text-center`}
-                  >
-                    {date.getMonth() + 1}/{date.getDate()}
-                  </span>
-                </div>
+                <DateTick
+                  date={date}
+                  yearHasStarted={yearHasStarted}
+                  isPeak={index % 10 === 0}
+                />
               );
             },
           )}
