@@ -41,6 +41,22 @@ const DateSelector = () => {
       : MONTHS;
   };
 
+  const getValidYears = () => {
+    const years: number[] = [];
+
+    if (events.length === 0) return [new Date().getFullYear()];
+
+    for (const event of events) {
+      const year = event.initialDate.getFullYear();
+
+      if (!years.includes(year)) years.push(year);
+    }
+
+    return years;
+  };
+
+  const years = getValidYears();
+
   return (
     <div className="grid sm:justify-items-center">
       <div className="grid justify-items-center text-(--accent) cursor-pointer">
@@ -89,62 +105,39 @@ const DateSelector = () => {
             </div>
 
             <div
-              className={` ${events.length > 2 || dateSelection.via === "month" ? "grid grid-cols-3" : "flex"} gap-4 justify-center place-items-center overflow-y-auto scrollbar-ui scrollbar-thin scrollbar-thumb max-h-40 min-h-10`}
+              className={` ${years.length > 2 || dateSelection.via === "month" ? "grid grid-cols-3" : "flex"} gap-4 justify-center place-items-center overflow-y-auto scrollbar-ui scrollbar-thin scrollbar-thumb max-h-40 min-h-10`}
             >
-              {dateSelection.via === "year" ? (
-                events.length > 0 ? (
-                  events.map((event, index) => (
+              {dateSelection.via === "year"
+                ? getValidYears().map((year, index) => (
                     <button
                       key={index}
-                      className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.year === event.initialDate.getFullYear() ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
+                      className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.year === year ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
                       onClick={() => {
                         setDateSelection({
                           isMenuExpanded: false,
-                          year: event.initialDate.getFullYear(),
+                          year,
                         });
-                        slideToDate(
-                          dateSelection.month + 1,
-                          event.initialDate.getFullYear(),
-                        );
+                        slideToDate(dateSelection.month + 1, year);
                       }}
                     >
-                      {event.initialDate.toLocaleDateString("en-US", {
-                        year: "numeric",
-                      })}
+                      {year}
                     </button>
                   ))
-                ) : (
-                  <button
-                    className="text-sm sm:text-[24px] text-(--accent) cursor-pointer"
-                    onClick={() => {
-                      setDateSelection({
-                        isMenuExpanded: false,
-                        year: new Date().getFullYear(),
-                      });
-                    }}
-                  >
-                    {new Date().toLocaleDateString("en-US", {
-                      year: "numeric",
-                    })}
-                  </button>
-                )
-              ) : (
-                getValidMonths().map((month, index) => (
-                  <button
-                    key={index}
-                    className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.month === month.index + 1 ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
-                    onClick={() => {
-                      setDateSelection({
-                        isMenuExpanded: false,
-                        month: month.index + 1,
-                      });
-                      slideToDate(month.index + 1, dateSelection.year);
-                    }}
-                  >
-                    {month.name}
-                  </button>
-                ))
-              )}
+                : getValidMonths().map((month, index) => (
+                    <button
+                      key={index}
+                      className={`text-sm sm:text-[24px] text-(--accent) cursor-pointer ${dateSelection.month === month.index + 1 ? "bg-(--secondary-foreground)/30" : ""} hover:bg-(--secondary-foreground)/30} hover:bg-(--secondary-foreground)/50 active:bg-(--secondary-foreground)/70 transition-all duration-100 rounded-xl px-2 py-2 w-full`}
+                      onClick={() => {
+                        setDateSelection({
+                          isMenuExpanded: false,
+                          month: month.index + 1,
+                        });
+                        slideToDate(month.index + 1, dateSelection.year);
+                      }}
+                    >
+                      {month.name}
+                    </button>
+                  ))}
             </div>
           </div>
 
