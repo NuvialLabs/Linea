@@ -6,8 +6,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
-import { MouseEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TimelineStore from "@/stores/timeline-store";
+import { checkIfImage, onAttachementClick } from "./utils";
 
 const PointMark = ({ events }: { events: Event[] }) => {
   const { zoomOptions } = TimelineStore();
@@ -27,36 +28,7 @@ const PointMark = ({ events }: { events: Event[] }) => {
         setIsImage(res);
       });
     }
-  }, []);
-
-  useEffect(() => {
-    if (events[eventIndex].link) {
-      checkIfImage(events[eventIndex].link).then((res) => {
-        setIsImage(res);
-      });
-    }
   }, [eventIndex]);
-
-  const checkIfImage = (url: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
-      img.src = url;
-    });
-  };
-
-  const onAttachementClick = (e: MouseEvent) => {
-    e.stopPropagation();
-
-    if (!events[eventIndex].link) return;
-
-    const safeLink = events[eventIndex].link.startsWith("http")
-      ? events[eventIndex].link
-      : `https://${events[eventIndex].link}`;
-
-    window.open(safeLink, "_blank", "noopener,noreferrer");
-  };
 
   return (
     <div
@@ -69,10 +41,12 @@ const PointMark = ({ events }: { events: Event[] }) => {
             className="cursor-pointer h-4"
             onMouseDown={(e) => {
               e.stopPropagation();
-              setEventIndex((prev) => (prev > 0 ? prev - 1 : prev));
+              setEventIndex((prev) =>
+                prev > 0 ? prev - 1 : events.length - 1,
+              );
             }}
           />
-          {events.length > 2 && (
+          {events.length > 1 && (
             <span className="text-xs">
               {eventIndex + 1}/{events.length}
             </span>
@@ -82,7 +56,7 @@ const PointMark = ({ events }: { events: Event[] }) => {
             onMouseDown={(e) => {
               e.stopPropagation();
               setEventIndex((prev) =>
-                prev < events.length - 1 ? prev + 1 : prev,
+                prev < events.length - 1 ? prev + 1 : 0,
               );
             }}
           />
@@ -128,7 +102,11 @@ const PointMark = ({ events }: { events: Event[] }) => {
         }}
       >
         <div className="flex justify-between p-2">
-          <h1 className="text-[16px] font-bold">{events[eventIndex].name}</h1>
+          <h1
+            className={`text-[16px] font-bold ${isExpanded ? "" : "line-clamp-2 text-ellipsis"}`}
+          >
+            {events[eventIndex].name}
+          </h1>
           {isExpandable && isEnlarged && (
             <ArrowsPointingInIcon
               className="w-4 h-4 cursor-pointer"
@@ -143,7 +121,9 @@ const PointMark = ({ events }: { events: Event[] }) => {
             />
           )}
         </div>
-        <p className="text-[12px] mt-1.5 line-clamp-2">
+        <p
+          className={`text-[12px] mt-1.5 ${isExpanded ? "" : "line-clamp-2 text-ellipsis"}`}
+        >
           {events[eventIndex].description}
         </p>
 
@@ -157,14 +137,14 @@ const PointMark = ({ events }: { events: Event[] }) => {
                   src={events[eventIndex].link}
                   alt=""
                   className="object-cover"
-                  onMouseDown={onAttachementClick}
+                  onMouseDown={(e) => onAttachementClick(e, events[eventIndex])}
                 />
               ) : (
                 <button
-                  onMouseDown={onAttachementClick}
+                  onMouseDown={(e) => onAttachementClick(e, events[eventIndex])}
                   className="h-10 w-[95%] bg-(--secondary-foreground)/20 rounded-md flex items-center justify-between px-2 py-4 m-2 cursor-pointer"
                 >
-                  <h1 className="w-2/3 line-clamp-2 text-xs">
+                  <h1 className="w-[85%] line-clamp-2 text-xs text-ellipsis">
                     {events[eventIndex].link}
                   </h1>
                   <ArrowTopRightOnSquareIcon className="h-4" />

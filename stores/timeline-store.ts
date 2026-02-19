@@ -72,8 +72,28 @@ export default create<TimelineStore>((set, get) => ({
         {
           id: "3",
           name: "Event 3",
-          initialDate: new Date("3/4/2026"),
+          initialDate: new Date("2/1/2026"),
           // color: "#FF2222",
+        },
+        {
+          id: "4",
+          name: "Event 4",
+          description:
+            "asdfaksjdfakjsdhflakjsdhflkajsdhflakjshfdlaksjhdflaksjhdflaksjdhflaksjdfhalksjdfhalksjdfhlaksjdfhlaskjdhfalksjdfhakd",
+          initialDate: new Date("2/1/2026"),
+          endDate: new Date("2/3/2026"),
+          color: "#1F36C0",
+          link: "https://www.youtube.com/watch?v=xnizJZ6jCKs&list=PLV0q_iygtBHhL_SiNAe92dUpxrA1uwS9m&index=12",
+        },
+        {
+          id: "5",
+          name: "Event 5",
+          description:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi at, aperiam voluptas ratione harum ea aspernatur vero perferendis libero doloribus autem molestiae voluptatibus in placeat excepturi saepe soluta, nam distinctio.",
+          initialDate: new Date("2/1/2026"),
+          endDate: new Date("2/14/2026"),
+          color: "#1F46D0",
+          link: "https://agedigroup.com/wp-content/uploads/2020/09/asset-manager-real-estate-4.png",
         },
       ],
     },

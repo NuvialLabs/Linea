@@ -1,7 +1,7 @@
 import TimelineStore from "@/stores/timeline-store";
 import { addDays, differenceInDays } from "@/utils/date_methods";
 import { useEffect } from "react";
-import { PointMark } from "../Marks";
+import { IntervalMark, PointMark } from "../Marks";
 import DateTick from "./components/DateTick";
 
 const Timeline = () => {
@@ -71,15 +71,32 @@ const Timeline = () => {
               const date = addDays(index, startDate);
               const yearHasStarted =
                 date.getMonth() === 0 && date.getDate() === 1;
-              const events = selectedTimeline?.events.filter(
-                (event) =>
-                  event.initialDate.getDate() === date.getDate() &&
-                  event.initialDate.getMonth() === date.getMonth() &&
-                  event.initialDate.getFullYear() === date.getFullYear(),
-              );
+              const pointEvents =
+                selectedTimeline?.events.filter(
+                  (event) =>
+                    event.initialDate.getDate() === date.getDate() &&
+                    event.initialDate.getMonth() === date.getMonth() &&
+                    event.initialDate.getFullYear() === date.getFullYear() &&
+                    !event.endDate,
+                ) ?? [];
+              const intervalEvents =
+                selectedTimeline?.events.filter(
+                  (event) =>
+                    event.initialDate.getDate() === date.getDate() &&
+                    event.initialDate.getMonth() === date.getMonth() &&
+                    event.initialDate.getFullYear() === date.getFullYear() &&
+                    event.endDate,
+                ) ?? [];
 
-              return (events?.length ?? 0) > 0 ? (
-                <PointMark events={events ?? []} />
+              return pointEvents.length > 0 || intervalEvents.length > 0 ? (
+                <>
+                  {pointEvents.length > 0 && (
+                    <PointMark events={pointEvents ?? []} />
+                  )}
+                  {intervalEvents.length > 0 && (
+                    <IntervalMark events={intervalEvents ?? []} />
+                  )}
+                </>
               ) : (
                 <DateTick
                   date={date}
