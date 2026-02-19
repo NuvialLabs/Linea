@@ -71,21 +71,15 @@ const Timeline = () => {
               const date = addDays(index, startDate);
               const yearHasStarted =
                 date.getMonth() === 0 && date.getDate() === 1;
-              const event = selectedTimeline?.events.find(
+              const events = selectedTimeline?.events.filter(
                 (event) =>
                   event.initialDate.getDate() === date.getDate() &&
                   event.initialDate.getMonth() === date.getMonth() &&
                   event.initialDate.getFullYear() === date.getFullYear(),
               );
 
-              return event ? (
-                <PointMark
-                  event={event}
-                  isExpandable={
-                    (event?.description?.length ?? 0) > 82 ||
-                    event.link !== undefined
-                  }
-                />
+              return (events?.length ?? 0) > 0 ? (
+                <PointMark events={events ?? []} />
               ) : (
                 <DateTick
                   date={date}

@@ -65,14 +65,14 @@ export default create<TimelineStore>((set, get) => ({
         {
           id: "2",
           name: "Event 2",
-          initialDate: new Date("2/3/2026"),
+          initialDate: new Date("3/4/2026"),
           color: "#1A7033",
           link: "https://www.youtube.com/watch?v=xnizJZ6jCKs&list=PLV0q_iygtBHhL_SiNAe92dUpxrA1uwS9m&index=12",
         },
         {
           id: "3",
           name: "Event 3",
-          initialDate: new Date("1/2/2026"),
+          initialDate: new Date("3/4/2026"),
           // color: "#FF2222",
         },
       ],
