@@ -5,6 +5,7 @@ import {
   ArrowTopRightOnSquareIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import TimelineStore from "@/stores/timeline-store";
@@ -107,19 +108,28 @@ const PointMark = ({ events }: { events: Event[] }) => {
           >
             {events[eventIndex].name}
           </h1>
-          {isExpandable && isEnlarged && (
-            <ArrowsPointingInIcon
-              className="w-4 h-4 cursor-pointer"
-              onMouseDown={() => setIsEnlarged(false)}
-            />
-          )}
 
-          {isExpandable && !isEnlarged && (
-            <ArrowsPointingOutIcon
-              className="w-4 h-4 cursor-pointer"
-              onMouseDown={() => setIsEnlarged(true)}
-            />
-          )}
+          <div className="flex items-center gap-2">
+            {keepExpanded && (
+              <XCircleIcon
+                className="w-4 h-4 cursor-pointer"
+                onMouseDown={() => setKeepExpanded(false)}
+              />
+            )}
+            {isExpandable && isEnlarged && (
+              <ArrowsPointingInIcon
+                className="w-4 h-4 cursor-pointer"
+                onMouseDown={() => setIsEnlarged(false)}
+              />
+            )}
+
+            {isExpandable && !isEnlarged && (
+              <ArrowsPointingOutIcon
+                className="w-4 h-4 cursor-pointer"
+                onMouseDown={() => setIsEnlarged(true)}
+              />
+            )}
+          </div>
         </div>
         <p
           className={`text-[12px] mt-1.5 ${isExpanded ? "" : "line-clamp-2 text-ellipsis"}`}
