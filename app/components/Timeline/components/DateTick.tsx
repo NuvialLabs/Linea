@@ -1,4 +1,5 @@
 import TimelineStore from "@/stores/timeline-store";
+import { AddMark } from "../../Marks";
 
 const DateTick = ({
   date,
@@ -10,6 +11,7 @@ const DateTick = ({
   isPeak: boolean;
 }) => {
   const { zoomOptions } = TimelineStore();
+
   return isPeak ? (
     <div
       id={date.toISOString().split("T")[0]}
@@ -18,9 +20,12 @@ const DateTick = ({
         marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
       }}
     >
-      <div
-        className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-9 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 rounded-t-full cursor-pointer duration-300 transition-all`}
-      />
+      <div className="relative group/add-mark">
+        <div
+          className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-9 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 group-hover/add-mark:opacity-0 rounded-t-full cursor-pointer duration-300 transition-all`}
+        />
+        <AddMark top="top-6" />
+      </div>
 
       <h1 className="wrap-break-word text-[8px] font-bold absolute w-1">
         {yearHasStarted ? date.getFullYear() : ""}
@@ -41,9 +46,12 @@ const DateTick = ({
         marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
       }}
     >
-      <div
-        className={`${yearHasStarted ? "h-16 w-2 bg-(--accent)" : "h-3 w-1 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-200 rounded-t-full cursor-pointer duration-300 transition-all`}
-      />
+      <div className="relative group/add-mark">
+        <div
+          className={`${yearHasStarted ? "h-16 w-2 bg-(--accent)" : "h-3 w-1 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-200 group-hover/add-mark:opacity-0 rounded-t-full cursor-pointer duration-300 transition-all`}
+        />
+        <AddMark top="top-0" />
+      </div>
 
       <h1 className="wrap-break-word text-[8px] font-bold absolute w-1">
         {yearHasStarted ? date.getFullYear() : ""}
