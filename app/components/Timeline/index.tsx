@@ -99,6 +99,7 @@ const Timeline = () => {
                 </>
               ) : (
                 <DateTick
+                  key={date.toISOString().split("T")[0]}
                   date={date}
                   yearHasStarted={yearHasStarted}
                   isPeak={index % 10 === 0}

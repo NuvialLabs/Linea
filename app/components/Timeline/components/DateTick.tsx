@@ -12,7 +12,6 @@ const DateTick = ({
   const { zoomOptions } = TimelineStore();
   return isPeak ? (
     <div
-      key={date.toISOString().split("T")[0]}
       id={date.toISOString().split("T")[0]}
       className="relative group/date-tick grid place-items-center"
       style={{
