@@ -73,6 +73,7 @@ const DateSelector = () => {
         </h1>
         <h1>
           {dateSelection.month !== undefined &&
+            MONTHS[dateSelection.month - 1] !== undefined &&
             MONTHS[dateSelection.month - 1].name}
         </h1>
       </div>

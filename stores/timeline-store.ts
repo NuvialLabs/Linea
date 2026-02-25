@@ -24,6 +24,11 @@ interface TimelineStore {
     isMenuExpanded: boolean;
     level: number;
   };
+  selectionInterval: { start: Date | null; end: Date | null };
+  setSelectionInterval: (interval: {
+    start: Date | null;
+    end: Date | null;
+  }) => void;
   dateSelection: DateSelection;
   setZoomOptions: (options: { isMenuExpanded: boolean; level: number }) => void;
   setDateSelection: (options: {
@@ -109,6 +114,10 @@ export default create<TimelineStore>((set, get) => ({
     isMenuExpanded: false,
     level: 50,
   },
+  selectionInterval: { start: null, end: null },
+  setSelectionInterval: (interval) => {
+    set({ selectionInterval: interval });
+  },
   dateSelection: {
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
@@ -128,6 +137,7 @@ export default create<TimelineStore>((set, get) => ({
   },
   onPointerDown: (e: React.PointerEvent) => {
     const ref = get().timelineRulerRef;
+
     isDragging = true;
     startX = e.clientX;
     startScrollLeft = ref.current!.scrollLeft;
