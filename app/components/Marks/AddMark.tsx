@@ -1,10 +1,14 @@
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import TimelineStore from "@/stores/timeline-store";
 
-const AddMark = ({ top }: { top: string }) => {
+const AddMark = ({ top, date }: { top: string; date: Date }) => {
+  const { setIsEventModalOpen, setInitialDate } = TimelineStore();
+
   return (
     <div
       onMouseDown={() => {
-        //TODO: Implement event addition
+        setInitialDate(date);
+        setIsEventModalOpen(true);
       }}
       className={`bg-white/80 rounded-full absolute ${top} -left-2 group-hover/add-mark:opacity-100 opacity-0 transition-opacity duration-300`}
     >

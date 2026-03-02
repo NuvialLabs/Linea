@@ -95,6 +95,8 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
               onMouseDown={() => setIsEnlarged(true)}
             />
           )}
+
+          {/* TODO: Add close button for removing interval selection entirely */}
         </div>
 
         {isEnlarged && (

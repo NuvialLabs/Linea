@@ -51,3 +51,5 @@ export const MONTHS = [
     index: 11,
   },
 ];
+
+export const COLORS = ["#FF5621", "#FFF422", "#22FFAA", "#2282FF"];

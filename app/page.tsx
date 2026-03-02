@@ -6,6 +6,8 @@ import Background from "@/global/components/Background";
 import logo from "@/assets/images/logo.svg";
 import { useState } from "react";
 import { TopicMenu, Timeline, TimelineControls } from "./components";
+import NewEventModal from "./components/NewEventModal";
+import TimelineStore from "@/stores/timeline-store";
 
 export default function Home() {
   const [syncDate, setSyncDate] = useState<Date | null>(new Date("2/3/2026")); //TODO: replace with actual last sync date
@@ -43,6 +45,7 @@ export default function Home() {
       </nav>
       <Timeline />
       <TimelineControls isEmbedded={false} />
+      <NewEventModal />
     </main>
   );
 }

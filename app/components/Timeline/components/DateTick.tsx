@@ -49,7 +49,7 @@ const DateTick = ({
             className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-9 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 group-hover/add-mark:opacity-0 rounded-t-full cursor-pointer duration-300 transition-all`}
           />
           <SelectMark top="top-0" isSelected={false} date={date} />
-          <AddMark top="top-6" />
+          <AddMark top="top-6" date={date} />
         </div>
 
         <h1 className="wrap-break-word text-[8px] font-bold absolute w-1">
@@ -76,7 +76,7 @@ const DateTick = ({
             className={`${yearHasStarted ? "h-16 w-2 bg-(--accent)" : "h-3 w-1 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-200 group-hover/add-mark:opacity-0 rounded-t-full cursor-pointer duration-300 transition-all`}
           />
           <SelectMark top="-top-6" isSelected={false} date={date} />
-          <AddMark top="top-0" />
+          <AddMark top="top-0" date={date} />
         </div>
 
         <h1 className="wrap-break-word text-[8px] font-bold absolute w-1">

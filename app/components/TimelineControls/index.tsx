@@ -9,6 +9,7 @@ import ZoomSlider from "./components/ZoomSlider";
 
 const TimelineControls = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const { onLeftPan, onRightPan } = TimelineStore(); //TODO: Add key listeners for left and right arrow keys to pan the timeline
+  const { setIsEventModalOpen } = TimelineStore();
 
   return (
     <section
@@ -19,7 +20,12 @@ const TimelineControls = ({ isEmbedded }: { isEmbedded: boolean }) => {
         className="text-white h-12 w-12 cursor-pointer py-1 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-full"
       />
       {!isEmbedded && (
-        <PlusIcon className="text-white h-7 w-7 cursor-pointer py-1 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-full" />
+        <PlusIcon
+          onMouseDown={(e) => {
+            setIsEventModalOpen(true);
+          }}
+          className="text-white h-7 w-7 cursor-pointer py-1 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-full"
+        />
       )}
       {!isEmbedded && <DateSelector />}
 
