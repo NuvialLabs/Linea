@@ -6,6 +6,7 @@ import {
 } from "@heroicons/react/24/solid";
 import TimelineStore from "@/stores/timeline-store";
 import { useEffect, useState } from "react";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 const SelectMark = ({
   top,
@@ -132,6 +133,12 @@ const SelectMark = ({
             <div className="flex gap-2 justify-center mt-2">
               <ArrowTopRightOnSquareIcon className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2" />
               <CodeBracketIcon className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2" />
+              <XCircleIcon
+                onMouseDown={() => {
+                  setSelectionInterval({ start: null, end: null });
+                }}
+                className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
+              />
             </div>
           )}
         </div>
