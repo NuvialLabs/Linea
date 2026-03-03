@@ -29,6 +29,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
     setTimelines,
     setSelectedTimeline,
     dateSelection,
+    setError,
   } = TimelineStore();
   const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
@@ -48,7 +49,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
       setSelectedTimeline(timeline);
 
       setTimeout(() => {
-        slideToDate(dateSelection.month, dateSelection.year);
+        slideToDate(setError, dateSelection.month, dateSelection.year);
       }, 100); //FIXME: Optimize - Slide once all marks are rendered
     }
   }, []);

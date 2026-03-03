@@ -40,6 +40,8 @@ interface TimelineStore {
   initialDate?: Date;
   setInitialDate: (date?: Date) => void;
   isEventModalOpen: boolean;
+  error?: string;
+  setError: (value?: string) => void;
   setIsEventModalOpen: (isOpen: boolean) => void;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerMove: (e: React.PointerEvent) => void;
@@ -161,6 +163,9 @@ export default create<TimelineStore>((set, get) => ({
   isEventModalOpen: false,
   setIsEventModalOpen(isOpen: boolean) {
     set({ isEventModalOpen: isOpen });
+  },
+  setError: (value) => {
+    set({ error: value });
   },
   onPointerDown: (e: React.PointerEvent) => {
     const ref = get().timelineRulerRef;

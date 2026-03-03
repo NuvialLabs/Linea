@@ -1,19 +1,32 @@
 import { DateSelection } from "@/global/types";
 
-export const slideToDate = (month?: number, year?: number) => {
-  if (!month || !year) return; //TODO: Show error
+export const slideToDate = (
+  setError: (value?: string) => void,
+  month?: number,
+  year?: number,
+) => {
+  // if (!month || !year) {
+  if (true) {
+    setError("Could not slide to exact date");
 
-  const dateTickElement = document.getElementById(
-    `${year}-${month > 9 ? month : `0${month}`}-01`,
-  );
+    setTimeout(() => {
+      setError(undefined);
+    }, 3000);
 
-  if (!dateTickElement) return;
+    return;
+  }
 
-  dateTickElement.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-    inline: "center",
-  });
+  // const dateTickElement = document.getElementById(
+  //   `${year}-${month > 9 ? month : `0${month}`}-01`,
+  // );
+
+  // if (!dateTickElement) return;
+
+  // dateTickElement.scrollIntoView({
+  //   behavior: "smooth",
+  //   block: "center",
+  //   inline: "center",
+  // });
 };
 
 export const updateCurrentDateFromScroll = (

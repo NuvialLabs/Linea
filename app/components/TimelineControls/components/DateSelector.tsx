@@ -3,7 +3,8 @@ import TimelineStore from "@/stores/timeline-store";
 import { slideToDate } from "@/utils/slider_methods";
 
 const DateSelector = () => {
-  const { dateSelection, setDateSelection, selectedTimeline } = TimelineStore();
+  const { dateSelection, setDateSelection, selectedTimeline, setError } =
+    TimelineStore();
   const events = selectedTimeline?.events ?? [];
 
   const getBottomOffset = () => {
@@ -118,7 +119,7 @@ const DateSelector = () => {
                           isMenuExpanded: false,
                           year,
                         });
-                        slideToDate(dateSelection.month + 1, year);
+                        slideToDate(setError, dateSelection.month + 1, year);
                       }}
                     >
                       {year}
@@ -133,7 +134,11 @@ const DateSelector = () => {
                           isMenuExpanded: false,
                           month: month.index + 1,
                         });
-                        slideToDate(month.index + 1, dateSelection.year);
+                        slideToDate(
+                          setError,
+                          month.index + 1,
+                          dateSelection.year,
+                        );
                       }}
                     >
                       {month.name}

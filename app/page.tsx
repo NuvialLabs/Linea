@@ -11,6 +11,7 @@ import TimelineStore from "@/stores/timeline-store";
 
 export default function Home() {
   const [syncDate, setSyncDate] = useState<Date | null>(new Date("2/3/2026")); //TODO: replace with actual last sync date
+  const { error } = TimelineStore();
 
   return (
     <main className=" w-screen grid place-items-between justify-items-center">
@@ -44,7 +45,15 @@ export default function Home() {
         </div>
       </nav>
       <Timeline />
-      <TimelineControls isEmbedded={false} />
+      <div className="grid justify-items-center">
+        {error && (
+          <span className="text-sm text-red-500 font-semibold rounded-full bg-red-900/20 px-4 py-2">
+            Could not slide to exact date
+          </span>
+        )}
+        <TimelineControls isEmbedded={false} />
+      </div>
+
       <NewEventModal />
     </main>
   );

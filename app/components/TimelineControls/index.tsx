@@ -13,7 +13,7 @@ const TimelineControls = ({ isEmbedded }: { isEmbedded: boolean }) => {
 
   return (
     <section
-      className={`relative h-18 w-[90%] ${isEmbedded ? "sm:w-70" : "sm:w-130"} my-8 flex justify-around items-center rounded-full bg-(--secondary-background) shadow-[0_14px_50px_-8px_rgba(179,167,116,0.31)]`}
+      className={`relative h-18 w-[90%] ${isEmbedded ? "sm:w-70" : "sm:w-130"} mt-1 mb-6 flex justify-around items-center rounded-full bg-(--secondary-background) shadow-[0_14px_50px_-8px_rgba(179,167,116,0.31)]`}
     >
       <ChevronLeftIcon
         onClick={onLeftPan}
