@@ -28,11 +28,10 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
     selectedTimeline,
     setTimelines,
     setSelectedTimeline,
-    setStartDate,
-    setEndDate,
     dateSelection,
   } = TimelineStore();
   const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
+  const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
   const [editingTimeline, setEditingTimeline] = useState<
     Timeline | undefined
   >();
@@ -99,17 +98,25 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                   className={`mt-2 p-2 ${index === timelines.length - 1 ? "" : "border-b"}  text-(--accent) border-(--secondary-foreground)/50 flex items-center justify-between cursor-pointer group/list-item relative`}
                 >
                   {editingTimeline && editingTimeline.id === timeline.id ? (
-                    <input
-                      type="text"
-                      value={editingTimeline.name}
-                      onChange={(e) => {
-                        setEditingTimeline({
-                          ...editingTimeline,
-                          name: e.target.value,
-                        });
-                      }}
-                      className="w-full bg-(--secondary-foreground)/10 backdrop-blur-md text-(--accent) font-semibold text-[18px] p-1 rounded-md mr-2"
-                    />
+                    <div className="relative w-full">
+                      <input
+                        type="text"
+                        value={editingTimeline.name}
+                        onChange={(e) => {
+                          setIsNameInvalid(false);
+                          setEditingTimeline({
+                            ...editingTimeline,
+                            name: e.target.value,
+                          });
+                        }}
+                        className="w-full bg-(--secondary-foreground)/10 backdrop-blur-md text-(--accent) font-semibold text-[18px] p-1 rounded-md mr-2"
+                      />
+                      {isNameInvalid && (
+                        <span className="text-[8px] text-red-500 font-semibold absolute">
+                          Invalid Name
+                        </span>
+                      )}
+                    </div>
                   ) : (
                     <h1
                       onClick={() => {
@@ -126,7 +133,11 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                     <aside className="text-white flex items-center gap-2 opacity-0 group-hover/list-item:opacity-100 transition-opacity duration-300">
                       <CheckCircleIcon
                         onClick={() => {
-                          if (editingTimeline.name.trim() === "") return; //TODO: Show error
+                          if (editingTimeline.name.trim() === "") {
+                            setIsNameInvalid(true);
+                            return;
+                          }
+
                           setTimelines(
                             timelines.map((timeline) =>
                               timeline.id === editingTimeline.id
@@ -150,7 +161,10 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                         className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
                       <XCircleIcon
-                        onClick={() => setEditingTimeline(undefined)}
+                        onClick={() => {
+                          setIsNameInvalid(false);
+                          setEditingTimeline(undefined);
+                        }}
                         className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
                     </aside>
@@ -177,6 +191,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                       <PencilIcon
                         className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                         onClick={() => {
+                          setIsNameInvalid(false);
                           setEditingTimeline(timeline);
                         }}
                       />
