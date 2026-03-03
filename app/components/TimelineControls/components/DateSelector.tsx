@@ -36,10 +36,18 @@ const DateSelector = () => {
     const { year } = dateSelection;
     const lastValidMonth = events[0].initialDate.getMonth();
     const lastValidYear = events[0].initialDate.getFullYear();
+    const firstValidMonth = events[events.length - 1].initialDate.getMonth();
+    const firstValidYear = events[events.length - 1].initialDate.getFullYear();
 
-    return year === lastValidYear
-      ? MONTHS.filter((_, index) => index <= lastValidMonth)
-      : MONTHS;
+    if (year === lastValidYear) {
+      return MONTHS.filter((_, index) => index <= lastValidMonth);
+    }
+
+    if (year === firstValidYear) {
+      return MONTHS.filter((_, index) => index >= firstValidMonth);
+    }
+
+    return MONTHS;
   };
 
   const getValidYears = () => {
@@ -142,7 +150,6 @@ const DateSelector = () => {
                       }}
                     >
                       {month.name}
-                      {/* BUG: Filter out months that do not exist in the reverse order */}
                     </button>
                   ))}
             </div>
