@@ -43,25 +43,16 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   useEffect(() => {
     if (timelines && timelines.length > 0) {
       //TODO: Implement timeline selection for embedded view
+      //TODO: Improve logic when data is loaded from importing, logging in, etc
       const timeline = timelines[0];
-      const events = timeline.events;
 
       setSelectedTimeline(timeline);
-      setStartDate(subtractDays(30, events[events.length - 1].initialDate));
-      setEndDate(
-        addDays(
-          30,
-          events[0].initialDate < new Date()
-            ? new Date()
-            : events[0].initialDate,
-        ),
-      );
 
       setTimeout(() => {
         slideToDate(dateSelection.month, dateSelection.year);
       }, 100); //FIXME: Optimize - Slide once all marks are rendered
     }
-  }, [timelines]);
+  }, []);
 
   return (
     <main className="relative w-full sm:w-fit">
@@ -82,23 +73,21 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
         <>
           <section className="w-full sm:w-100 h-75 border border-(--accent) bg-(--background)/90 backdrop-blur-md rounded-lg absolute sm:left-1/2 sm:-translate-x-1/2 mt-4 p-4 z-10">
             <div className="flex items-center gap-4">
-              <button className="flex justify-center items-center gap-4 bg-(--accent) rounded-xl p-2 text-(--background) w-31.25 h-10 text-[10px] cursor-pointer hover:bg-(--accent)/90 active:bg-(--accent)/50 transition-all duration-200">
+              <button
+                onClick={() => {
+                  setTimelines([
+                    ...timelines,
+                    {
+                      id: crypto.randomUUID(),
+                      name: `Timeline ${timelines.length + 1}`,
+                      events: [],
+                    },
+                  ]);
+                }}
+                className="flex justify-center items-center gap-4 bg-(--accent) rounded-xl p-2 text-(--background) w-31.25 h-10 text-[10px] cursor-pointer hover:bg-(--accent)/90 active:bg-(--accent)/50 transition-all duration-200"
+              >
                 <PlusCircleIcon className="text-white w-7.5 h-7.5" />
-                <h1
-                  className="font-semibold"
-                  onClick={() => {
-                    setTimelines([
-                      ...timelines,
-                      {
-                        id: crypto.randomUUID(),
-                        name: `Timeline ${timelines.length + 1}`,
-                        events: [],
-                      },
-                    ]);
-                  }}
-                >
-                  New Timeline
-                </h1>
+                <h1 className="font-semibold">New Timeline</h1>
               </button>
               <DocumentArrowUpIcon className="h-8 w-8 text-white cursor-pointer hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1" />
             </div>

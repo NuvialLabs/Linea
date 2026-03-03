@@ -8,8 +8,8 @@ export type FormData = {
 export const validateInputs = (
   title: string,
   startDate: string,
-  endDate: string,
   link: string,
+  endDate?: string,
 ): FormData => {
   const errors: FormData = { hasErrors: false };
 

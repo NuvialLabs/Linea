@@ -3,17 +3,26 @@ import TimelineStore from "@/stores/timeline-store";
 import NewEventHero from "@/assets/images/new-event-hero.png";
 import Image from "next/image";
 import DateInput from "./components/DateInput";
-import { COLORS } from "@/global/constants";
+import { COLORS, PRIMARY_COLOR } from "@/global/constants";
 import ColorInput from "./components/ColorInput";
 import { validateInputs, FormData } from "./utils";
+import { Event } from "@/global/types";
 
 const NewEventModal = () => {
-  const { isEventModalOpen, setIsEventModalOpen, initialDate, setInitialDate } =
-    TimelineStore();
+  const {
+    isEventModalOpen,
+    setIsEventModalOpen,
+    initialDate,
+    setInitialDate,
+    selectedTimeline,
+    setSelectedTimeline,
+    timelines,
+    setTimelines,
+  } = TimelineStore();
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
   const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [endDate, setEndDate] = useState<string | undefined>();
   const [description, setDescription] = useState("");
   const [color, setColor] = useState<string | undefined>();
   const [colors, setColors] = useState<string[]>([...COLORS]);
@@ -27,9 +36,9 @@ const NewEventModal = () => {
     }
   }, [initialDate]);
 
-  const onSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    const result = validateInputs(title, startDate, endDate, link);
+  const onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const result = validateInputs(title, startDate, link, endDate);
 
     setErrors(result);
 
@@ -37,6 +46,35 @@ const NewEventModal = () => {
       return;
     }
 
+    const event: Event = {
+      id: crypto.randomUUID(),
+      name: title,
+      link,
+      initialDate: new Date(startDate),
+      endDate: endDate ? new Date(endDate) : undefined,
+      description,
+      color: color || PRIMARY_COLOR,
+    };
+
+    if (selectedTimeline) {
+      selectedTimeline?.events.push(event);
+      selectedTimeline?.events.sort((a, b) => {
+        return b.initialDate.getTime() - a.initialDate.getTime();
+      });
+
+      const newTimelines = timelines.map((timeline) => {
+        if (timeline.id === selectedTimeline.id) {
+          return selectedTimeline;
+        }
+        return timeline;
+      });
+
+      setTimelines(newTimelines);
+      setSelectedTimeline(selectedTimeline);
+    }
+
+    setIsEventModalOpen(false);
+    resetForm();
     setInitialDate(undefined);
   };
 
@@ -61,7 +99,7 @@ const NewEventModal = () => {
         }}
         className="w-screen h-screen bg-black/50 fixed top-0 left-0 z-50"
       />
-      <div className="w-[85%] h-[60%] sm:h-auto xl:h-[600px] overflow-y-auto m-2 bg-(--background) rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 md:flex grid">
+      <div className="w-[85%] h-[60%] sm:h-auto xl:h-150 overflow-y-auto m-2 bg-(--background) rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 md:flex grid">
         <aside className="md:w-1/2 h-full bg-linear-180 from-(--accent)/20 via-30% via-transparent to-transparent rounded-[20px] md:hidden block">
           <Image src={NewEventHero} alt="" className="w-full sm:h-full mt-15" />
         </aside>

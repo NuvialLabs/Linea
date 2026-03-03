@@ -137,6 +137,7 @@ const DateSelector = () => {
                       }}
                     >
                       {month.name}
+                      {/* BUG: Filter out months that do not exist in the reverse order */}
                     </button>
                   ))}
             </div>

@@ -111,7 +111,21 @@ export default create<TimelineStore>((set, get) => ({
     set({ timelines });
   },
   setSelectedTimeline: (timeline: Timeline | null) => {
+    const events = timeline?.events;
+
     set({ selectedTimeline: timeline });
+
+    if (events && events.length > 0) {
+      set({
+        startDate: subtractDays(30, events[events.length - 1].initialDate),
+        endDate: addDays(
+          30,
+          events[0].initialDate < new Date()
+            ? new Date()
+            : events[0].initialDate,
+        ),
+      });
+    }
   },
   selectedTimeline: null,
   zoomOptions: {

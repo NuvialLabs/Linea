@@ -1,6 +1,6 @@
 import TimelineStore from "@/stores/timeline-store";
 import { addDays, differenceInDays } from "@/utils/date_methods";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { IntervalMark, PointMark } from "../Marks";
 import DateTick from "./components/DateTick";
 
@@ -64,7 +64,7 @@ const Timeline = () => {
       className="w-full h-[64vh] grid place-items-center overflow-x-hidden cursor-grab active:cursor-grabbing select-none touch-pan-x"
     >
       <div className="relative w-full ">
-        <div className="flex items-end px-2">
+        <div key="timeline" className="flex items-end px-2">
           {Array.from(
             { length: differenceInDays(startDate, endDate) + 1 }, //FIXME: Optimize rendering
             (_, index) => {
@@ -89,14 +89,20 @@ const Timeline = () => {
                 ) ?? [];
 
               return pointEvents.length > 0 || intervalEvents.length > 0 ? (
-                <>
+                <Fragment key={date.toISOString().split("T")[0]}>
                   {pointEvents.length > 0 && (
-                    <PointMark events={pointEvents ?? []} />
+                    <PointMark
+                      key={`${date.toISOString().split("T")[0]}-point`}
+                      events={pointEvents ?? []}
+                    />
                   )}
                   {intervalEvents.length > 0 && (
-                    <IntervalMark events={intervalEvents ?? []} />
+                    <IntervalMark
+                      key={`${date.toISOString().split("T")[0]}-interval`}
+                      events={intervalEvents ?? []}
+                    />
                   )}
-                </>
+                </Fragment>
               ) : (
                 <DateTick
                   key={date.toISOString().split("T")[0]}
