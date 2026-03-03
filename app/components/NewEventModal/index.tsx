@@ -32,8 +32,11 @@ const NewEventModal = () => {
         }}
         className="w-screen h-screen bg-black/50 fixed top-0 left-0 z-50"
       />
-      <div className="w-[80%] bg-(--background) rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex">
-        <form className="w-1/2  px-11.25 py-5">
+      <div className="w-[85%] h-[60%] sm:h-auto xl:h-[600px] overflow-y-auto m-2 bg-(--background) rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 md:flex grid">
+        <aside className="md:w-1/2 h-full bg-linear-180 from-(--accent)/20 via-30% via-transparent to-transparent rounded-[20px] md:hidden block">
+          <Image src={NewEventHero} alt="" className="w-full sm:h-full mt-15" />
+        </aside>
+        <form className="md:w-1/2 px-11.25 py-5">
           <h1 className="text-[24px] text-(--accent) font-bold">New Event</h1>
 
           <div className="grid gap-3 mt-7">
@@ -102,7 +105,7 @@ const NewEventModal = () => {
             </div>
           </div>
         </form>
-        <aside className="w-1/2 h-full bg-linear-180 from-(--accent)/20 via-30% via-transparent to-transparent rounded-[20px]">
+        <aside className="md:w-1/2 h-[90%] bg-linear-180 from-(--accent)/20 via-30% via-transparent to-transparent rounded-[20px] md:block hidden object-contain">
           <Image src={NewEventHero} alt="" className="w-full h-full mt-15" />
         </aside>
       </div>
