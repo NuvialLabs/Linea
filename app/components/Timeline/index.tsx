@@ -12,6 +12,7 @@ const Timeline = () => {
     onPointerMove,
     onPointerUp,
     onScroll,
+    onKeyDown,
     timelineRulerRef: ref,
     selectedTimeline,
   } = TimelineStore();
@@ -46,11 +47,13 @@ const Timeline = () => {
     el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchmove", onTouchMove, { passive: false });
     el.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("keydown", onKeyDown);
 
     return () => {
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
       el.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, []);
 

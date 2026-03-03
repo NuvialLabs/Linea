@@ -47,6 +47,7 @@ interface TimelineStore {
   onScroll: (e: React.WheelEvent<HTMLDivElement>) => void;
   onLeftPan: () => void;
   onRightPan: () => void;
+  onKeyDown: (e: KeyboardEvent) => void;
 }
 
 export default create<TimelineStore>((set, get) => ({
@@ -260,5 +261,27 @@ export default create<TimelineStore>((set, get) => ({
         );
       });
     }, 300);
+  },
+  onKeyDown: (e) => {
+    const ref = get().timelineRulerRef;
+
+    if (!ref.current) return;
+
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      ref.current.scrollBy({
+        left: e.key === "ArrowLeft" ? -1500 : 1500,
+        behavior: "smooth",
+      });
+
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          updateCurrentDateFromScroll(
+            get().timelineRulerRef,
+            get().dateSelection,
+            get().setDateSelection,
+          );
+        });
+      }, 300);
+    }
   },
 }));

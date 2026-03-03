@@ -8,7 +8,7 @@ import DateSelector from "./components/DateSelector";
 import ZoomSlider from "./components/ZoomSlider";
 
 const TimelineControls = ({ isEmbedded }: { isEmbedded: boolean }) => {
-  const { onLeftPan, onRightPan } = TimelineStore(); //TODO: Add key listeners for left and right arrow keys to pan the timeline
+  const { onLeftPan, onRightPan } = TimelineStore();
   const { setIsEventModalOpen } = TimelineStore();
 
   return (
