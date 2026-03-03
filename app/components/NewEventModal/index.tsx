@@ -5,13 +5,19 @@ import Image from "next/image";
 import DateInput from "./components/DateInput";
 import { COLORS } from "@/global/constants";
 import ColorInput from "./components/ColorInput";
+import { validateInputs, FormData } from "./utils";
 
 const NewEventModal = () => {
   const { isEventModalOpen, setIsEventModalOpen, initialDate, setInitialDate } =
     TimelineStore();
+  const [title, setTitle] = useState("");
+  const [link, setLink] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [color, setColor] = useState<string | undefined>();
   const [colors, setColors] = useState<string[]>([...COLORS]);
+  const [errors, setErrors] = useState<FormData>({ hasErrors: false });
 
   useEffect(() => {
     if (initialDate) {
@@ -21,14 +27,37 @@ const NewEventModal = () => {
     }
   }, [initialDate]);
 
+  const onSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    const result = validateInputs(title, startDate, endDate, link);
+
+    setErrors(result);
+
+    if (result.hasErrors) {
+      return;
+    }
+
+    setInitialDate(undefined);
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setLink("");
+    setStartDate("");
+    setEndDate("");
+    setDescription("");
+    setColor("");
+  };
+
   return !isEventModalOpen ? (
     <></>
   ) : (
     <main>
       <div
         onMouseDown={() => {
-          setIsEventModalOpen(false);
+          resetForm();
           setInitialDate(undefined);
+          setIsEventModalOpen(false);
         }}
         className="w-screen h-screen bg-black/50 fixed top-0 left-0 z-50"
       />
@@ -48,7 +77,13 @@ const NewEventModal = () => {
                 type="text"
                 className="w-full p-2 rounded-md bg-(--secondary-background) text-(--secondary-foreground) focus:outline-none focus:ring-2 focus:ring-(--accent) transition-all duration-200"
                 placeholder="Event"
+                onChange={(e) => setTitle(e.target.value)}
               />
+              {errors.title && (
+                <span className="text-[8px] text-red-500 font-semibold">
+                  {errors.title}
+                </span>
+              )}
             </div>
             <div>
               <h1 className="text-[8px] text-(--secondary-foreground) font-semibold mb-1">
@@ -69,25 +104,43 @@ const NewEventModal = () => {
                   onChange={setEndDate}
                 />
               </div>
+              {errors.startDate && (
+                <span className="text-[8px] text-red-500 font-semibold">
+                  {errors.startDate}
+                </span>
+              )}
             </div>
 
-            <input
-              type="text"
-              className="w-full p-2 rounded-md bg-(--secondary-background) text-(--secondary-foreground) focus:outline-none focus:ring-2 focus:ring-(--accent) transition-all duration-200 mt-2"
-              placeholder="External Link"
-            />
+            <div>
+              <input
+                type="text"
+                className="w-full p-2 rounded-md bg-(--secondary-background) text-(--secondary-foreground) focus:outline-none focus:ring-2 focus:ring-(--accent) transition-all duration-200 mt-2"
+                placeholder="External Link"
+                onChange={(e) => setLink(e.target.value)}
+              />
+              {errors.link && (
+                <span className="text-[8px] text-red-500 font-semibold">
+                  {errors.link}
+                </span>
+              )}
+            </div>
+
             <textarea
               rows={4}
               className="w-full p-2 rounded-md bg-(--secondary-background) text-(--secondary-foreground) focus:outline-none focus:ring-2 focus:ring-(--accent) transition-all duration-200 resize-none mt-2"
               placeholder="Description"
+              onChange={(e) => setDescription(e.target.value)}
             />
             <div className="flex justify-between items-center mt-3">
               <div className="flex gap-2 items-center">
-                {colors.map((color) => (
+                {colors.map((item) => (
                   <div
-                    key={color}
-                    className="w-4 h-4 rounded-full cursor-pointer"
-                    style={{ backgroundColor: color }}
+                    key={item}
+                    className={`w-4 h-4 rounded-full cursor-pointer ${color === item ? "scale-130" : ""}`}
+                    style={{ backgroundColor: item }}
+                    onMouseDown={() =>
+                      item !== color ? setColor(item) : setColor(undefined)
+                    }
                   />
                 ))}
 
@@ -95,9 +148,8 @@ const NewEventModal = () => {
               </div>
 
               <button
-                onMouseDown={() => {
-                  setInitialDate(undefined);
-                }}
+                type="button"
+                onMouseDown={onSubmit}
                 className="px-4 py-1 bg-(--accent) text-white rounded-md hover:bg-(--accent)/70 transition-colors duration-200 cursor-pointer"
               >
                 Submit
