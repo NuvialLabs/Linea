@@ -54,3 +54,4 @@ export const MONTHS = [
 
 export const COLORS = ["#FF5621", "#FFF422", "#22FFAA", "#2282FF"];
 export const PRIMARY_COLOR = "#b3a774";
+export const BACKGROUND_COLOR = "#1c1e1f";

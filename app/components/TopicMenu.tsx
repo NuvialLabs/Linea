@@ -8,7 +8,6 @@ import {
   ArrowDownTrayIcon,
   PhotoIcon,
   TableCellsIcon,
-  DocumentIcon,
 } from "@heroicons/react/24/solid";
 import {
   DocumentArrowUpIcon,
@@ -19,8 +18,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { Timeline } from "@/global/types";
 import TimelineStore from "@/stores/timeline-store";
-import { addDays, subtractDays } from "@/utils/date_methods";
 import { slideToDate } from "@/utils/slider_methods";
+import { exportJson, exportExcel, exportImage } from "@/data/export";
+import BracketIcon from "@/assets/icons/brackets.svg";
+import Image from "next/image";
 
 const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const {
@@ -30,6 +31,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
     setSelectedTimeline,
     dateSelection,
     setError,
+    timelineRulerRef,
   } = TimelineStore();
   const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
@@ -46,19 +48,34 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
       //TODO: Improve logic when data is loaded from importing, logging in, etc
       const timeline = timelines[0];
 
-      setSelectedTimeline(timeline);
-
-      setTimeout(() => {
-        slideToDate(setError, dateSelection.month, dateSelection.year);
-      }, 100); //FIXME: Optimize - Slide once all marks are rendered
+      selectTimeline(timeline);
     }
   }, []);
+
+  const selectTimeline = async (timeline: Timeline) => {
+    setSelectedTimeline(timeline);
+
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        slideToDate(setError, dateSelection.month, dateSelection.year);
+        resolve(true);
+      }, 100); //FIXME: Optimize - Slide once all marks are rendered
+    });
+  };
 
   return (
     <main className="relative w-full sm:w-fit">
       <div
         className={`flex items-center ${isEmbedded ? "" : "cursor-pointer"}`}
-        onClick={() => (isEmbedded ? null : setIsMenuExpanded(!isMenuExpanded))}
+        onClick={
+          isEmbedded
+            ? () => {}
+            : () => {
+                setIsMenuExpanded(!isMenuExpanded);
+                setEditingTimeline(undefined);
+                setDownloadTimeline(undefined);
+              }
+        }
       >
         <h1 className="text-(--accent) font-bold text-[24px] md:text-[36px] text-center">
           {selectedTimeline ? selectedTimeline.name : "Select Timeline"}
@@ -148,7 +165,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                           );
                           setEditingTimeline(undefined);
                         }}
-                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
                       <TrashIcon
                         onClick={() => {
@@ -159,25 +176,46 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                           );
                           setEditingTimeline(undefined);
                         }}
-                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
                       <XCircleIcon
                         onClick={() => {
                           setIsNameInvalid(false);
                           setEditingTimeline(undefined);
                         }}
-                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
                     </aside>
                   ) : downloadTimeline &&
                     downloadTimeline.id === timeline.id ? (
                     <aside className="text-white flex items-center gap-4 opacity-0 group-hover/list-item:opacity-100 transition-opacity duration-300">
-                      <DocumentIcon className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1" />
-                      <TableCellsIcon className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1" />
-                      <PhotoIcon className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1" />
+                      <Image
+                        src={BracketIcon}
+                        alt="Bracket Icon"
+                        onMouseDown={() => {
+                          exportJson(timeline);
+                        }}
+                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                      />
+
+                      <TableCellsIcon
+                        onMouseDown={() => {
+                          exportExcel(timeline);
+                        }}
+                        className="w-8 h-8 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                      />
+                      <PhotoIcon
+                        onMouseDown={async () => {
+                          await selectTimeline(timeline);
+                          //TODO: Improve with first showing a preview
+
+                          exportImage(timelineRulerRef, timeline.name);
+                        }}
+                        className="w-8 h-8 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                      />
                       <XCircleIcon
                         onClick={() => setDownloadTimeline(undefined)}
-                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                        className="w-8 h-8 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
                     </aside>
                   ) : (
@@ -186,11 +224,11 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                         onClick={() => {
                           setDownloadTimeline(timeline);
                         }}
-                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
 
                       <PencilIcon
-                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                         onClick={() => {
                           setIsNameInvalid(false);
                           setEditingTimeline(timeline);
