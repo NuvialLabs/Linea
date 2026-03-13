@@ -22,6 +22,7 @@ import { slideToDate } from "@/utils/slider_methods";
 import { exportJson, exportExcel, exportImage } from "@/data/export";
 import BracketIcon from "@/assets/icons/brackets.svg";
 import Image from "next/image";
+import Tooltip from "@/global/components/Tooltip";
 
 const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const {
@@ -149,35 +150,48 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
 
                   {editingTimeline && editingTimeline.id === timeline.id ? (
                     <aside className="text-white flex items-center gap-2 opacity-0 group-hover/list-item:opacity-100 transition-opacity duration-300">
-                      <CheckCircleIcon
-                        onClick={() => {
-                          if (editingTimeline.name.trim() === "") {
-                            setIsNameInvalid(true);
-                            return;
-                          }
+                      <Tooltip
+                        children={
+                          <CheckCircleIcon
+                            onClick={() => {
+                              if (editingTimeline.name.trim() === "") {
+                                setIsNameInvalid(true);
+                                return;
+                              }
 
-                          setTimelines(
-                            timelines.map((timeline) =>
-                              timeline.id === editingTimeline.id
-                                ? editingTimeline
-                                : timeline,
-                            ),
-                          );
-                          setEditingTimeline(undefined);
-                        }}
-                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                              setTimelines(
+                                timelines.map((timeline) =>
+                                  timeline.id === editingTimeline.id
+                                    ? editingTimeline
+                                    : timeline,
+                                ),
+                              );
+                              setEditingTimeline(undefined);
+                            }}
+                            className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                          />
+                        }
+                        tooltip="Save"
                       />
-                      <TrashIcon
-                        onClick={() => {
-                          setTimelines(
-                            timelines.filter(
-                              (prevTimeline) => prevTimeline.id !== timeline.id,
-                            ),
-                          );
-                          setEditingTimeline(undefined);
-                        }}
-                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+
+                      <Tooltip
+                        children={
+                          <TrashIcon
+                            onClick={() => {
+                              setTimelines(
+                                timelines.filter(
+                                  (prevTimeline) =>
+                                    prevTimeline.id !== timeline.id,
+                                ),
+                              );
+                              setEditingTimeline(undefined);
+                            }}
+                            className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                          />
+                        }
+                        tooltip="Delete"
                       />
+
                       <XCircleIcon
                         onClick={() => {
                           setIsNameInvalid(false);
@@ -189,50 +203,76 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                   ) : downloadTimeline &&
                     downloadTimeline.id === timeline.id ? (
                     <aside className="text-white flex items-center gap-4 opacity-0 group-hover/list-item:opacity-100 transition-opacity duration-300">
-                      <Image
-                        src={BracketIcon}
-                        alt="Bracket Icon"
-                        onMouseDown={() => {
-                          exportJson(timeline);
-                        }}
-                        className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                      <Tooltip
+                        children={
+                          <Image
+                            src={BracketIcon}
+                            alt="Bracket Icon"
+                            onMouseDown={() => {
+                              exportJson(timeline);
+                            }}
+                            className="w-12 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                          />
+                        }
+                        tooltip="JSON"
                       />
 
-                      <TableCellsIcon
-                        onMouseDown={() => {
-                          exportExcel(timeline);
-                        }}
-                        className="w-8 h-8 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                      <Tooltip
+                        children={
+                          <TableCellsIcon
+                            onMouseDown={() => {
+                              exportExcel(timeline);
+                            }}
+                            className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                          />
+                        }
+                        tooltip="Sheet"
                       />
-                      <PhotoIcon
-                        onMouseDown={async () => {
-                          await selectTimeline(timeline);
-                          //TODO: Improve with first showing a preview
 
-                          exportImage(timelineRulerRef, timeline.name);
-                        }}
-                        className="w-8 h-8 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                      <Tooltip
+                        children={
+                          <PhotoIcon
+                            onMouseDown={async () => {
+                              await selectTimeline(timeline);
+                              //TODO: Improve with first showing a preview
+
+                              exportImage(timelineRulerRef, timeline.name);
+                            }}
+                            className="w-6 h-6 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                          />
+                        }
+                        tooltip="Image"
                       />
+
                       <XCircleIcon
                         onClick={() => setDownloadTimeline(undefined)}
-                        className="w-8 h-8 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                        className="w-12 h-12 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                       />
                     </aside>
                   ) : (
                     <aside className="text-white flex items-center gap-4 opacity-0 group-hover/list-item:opacity-100 transition-opacity duration-300">
-                      <ArrowDownTrayIcon
-                        onClick={() => {
-                          setDownloadTimeline(timeline);
-                        }}
-                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                      <Tooltip
+                        children={
+                          <ArrowDownTrayIcon
+                            onClick={() => {
+                              setDownloadTimeline(timeline);
+                            }}
+                            className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                          />
+                        }
+                        tooltip="Export"
                       />
-
-                      <PencilIcon
-                        className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
-                        onClick={() => {
-                          setIsNameInvalid(false);
-                          setEditingTimeline(timeline);
-                        }}
+                      <Tooltip
+                        children={
+                          <PencilIcon
+                            className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                            onClick={() => {
+                              setIsNameInvalid(false);
+                              setEditingTimeline(timeline);
+                            }}
+                          />
+                        }
+                        tooltip="Edit"
                       />
                     </aside>
                   )}
