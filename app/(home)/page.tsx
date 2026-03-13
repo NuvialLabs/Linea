@@ -8,10 +8,11 @@ import { useState } from "react";
 import { TopicMenu, Timeline, TimelineControls } from "./components";
 import NewEventModal from "./components/NewEventModal";
 import TimelineStore from "@/stores/timeline-store";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
   const [syncDate, setSyncDate] = useState<Date | null>(new Date("2/3/2026")); //TODO: replace with actual last sync date
-  const { error } = TimelineStore();
+  const { error, setError } = TimelineStore();
 
   return (
     <main className=" w-screen grid place-items-between justify-items-center">
@@ -47,8 +48,14 @@ export default function Home() {
       <Timeline />
       <div className="grid justify-items-center">
         {error && (
-          <span className="text-sm text-red-500 font-semibold rounded-full bg-red-900/20 px-4 py-2">
-            Could not slide to exact date
+          <span className="text-sm text-red-500 font-semibold rounded-full bg-red-900/20 px-4 py-2 flex items-center gap-2 relative z-50">
+            {error}
+            <XMarkIcon
+              onMouseDown={() => {
+                setError(undefined);
+              }}
+              className="h-5 rounded-full bg-red-500/30 p-1 cursor-pointer"
+            />
           </span>
         )}
         <TimelineControls isEmbedded={false} />

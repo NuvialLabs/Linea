@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   ChevronDownIcon,
@@ -23,6 +23,7 @@ import { exportJson, exportExcel, exportImage } from "@/data/export";
 import BracketIcon from "@/assets/icons/brackets.svg";
 import Image from "next/image";
 import Tooltip from "@/global/components/Tooltip";
+import { handleFileUpload } from "@/data/import";
 
 const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const {
@@ -42,6 +43,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const [downloadTimeline, setDownloadTimeline] = useState<
     Timeline | undefined
   >();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (timelines && timelines.length > 0) {
@@ -51,7 +53,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
 
       selectTimeline(timeline);
     }
-  }, []);
+  }, [timelines]);
 
   const selectTimeline = async (timeline: Timeline) => {
     setSelectedTimeline(timeline);
@@ -107,7 +109,45 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                 <PlusCircleIcon className="text-white w-7.5 h-7.5" />
                 <h1 className="font-semibold">New Timeline</h1>
               </button>
-              <DocumentArrowUpIcon className="h-8 w-8 text-white cursor-pointer hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1" />
+              <Tooltip
+                children={
+                  <>
+                    <DocumentArrowUpIcon
+                      onClick={() => fileInputRef.current!.click()}
+                      className="h-8 w-8 text-white cursor-pointer hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
+                    ></DocumentArrowUpIcon>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".json"
+                      onChange={(e) =>
+                        handleFileUpload(
+                          e,
+                          (value) => {
+                            if (
+                              timelines.filter(
+                                (timeline) => timeline.id === value.id,
+                              ).length > 0
+                            ) {
+                              setError("Timeline already exists");
+                              setTimeout(() => setError(undefined), 5000);
+                              return;
+                            }
+
+                            setTimelines([...timelines, value]);
+                          },
+                          (error) => {
+                            setError(error);
+                            setTimeout(() => setError(undefined), 5000);
+                          },
+                        )
+                      }
+                      className="hidden"
+                    />
+                  </>
+                }
+                tooltip="Import"
+              />
             </div>
 
             <ul className="h-50 mt-7 overflow-y-auto">
@@ -189,7 +229,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                             className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                           />
                         }
-                        tooltip="Delete"
+                        tooltip="Delete" //TODO: When all timelines are deleted reset the timeline ruler to an empty state
                       />
 
                       <XCircleIcon
