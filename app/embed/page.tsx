@@ -3,7 +3,7 @@
 import Background from "@/global/components/Background";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
-import { Timeline, TimelineControls, TopicMenu } from "../components";
+import { Timeline, TimelineControls, TopicMenu } from "../(home)/components";
 import Link from "next/link";
 
 export default function Home() {
