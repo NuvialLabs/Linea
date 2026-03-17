@@ -39,7 +39,6 @@ export default function Home() {
                 ? `Last synced: ${syncDate.toLocaleDateString()} ${syncDate.toLocaleTimeString()}`
                 : "Not synced yet"}{" "}
               {/* //TODO: Only show when there is a Google drive account to sync */}
-              with
             </h1>
 
             <div className="w-20 relative">

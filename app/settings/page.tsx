@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 import SignupPlaceholder from "./components/SignupPlaceholder";
+import SettingsPanel from "./components/SettingsPanel";
 
 export default function Settings() {
   return (
@@ -34,7 +35,7 @@ export default function Settings() {
         </div>
       </nav>
 
-      <SignupPlaceholder />
+      {true ? <SettingsPanel /> : <SignupPlaceholder />}
     </main>
   );
 }
