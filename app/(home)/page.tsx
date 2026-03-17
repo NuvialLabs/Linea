@@ -52,7 +52,7 @@ export default function Home() {
 
               {isMenuExpanded && (
                 <>
-                  <nav className="absolute w-48 h-42 grid justify-center gap-5 p-5 border-(--accent) border right-0 top-15 rounded-xl text-(--accent)">
+                  <nav className="absolute w-48 h-42 grid justify-center gap-5 p-5 border-(--accent) border right-0 top-15 rounded-xl text-(--accent) z-30">
                     <button className="cursor-pointer">Sync</button>
                     <Link href="/settings">Settings</Link>
                     <button className="cursor-pointer">Logout</button>
