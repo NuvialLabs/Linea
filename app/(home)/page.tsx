@@ -9,11 +9,13 @@ import { TopicMenu, Timeline, TimelineControls } from "./components";
 import NewEventModal from "./components/NewEventModal";
 import TimelineStore from "@/stores/timeline-store";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Home() {
   const { error, setError } = TimelineStore();
+  const { data: session } = useSession();
 
-  const [syncDate, setSyncDate] = useState<Date | null>(new Date("2/3/2026")); //TODO: replace with actual last sync date
+  const [syncDate, setSyncDate] = useState<Date>(new Date("1/1/1970")); //TODO: replace with actual last sync date
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
 
   return (
@@ -35,18 +37,24 @@ export default function Home() {
 
           <aside className="grid sm:flex sm:items-center justify-items-end justify-end gap-4 w-1/3">
             <h1 className="text-(--secondary-foreground) text-[10px] sm:text-[14px] text-end">
-              {syncDate
+              {session
                 ? `Last synced: ${syncDate.toLocaleDateString()} ${syncDate.toLocaleTimeString()}`
-                : "Not synced yet"}{" "}
-              {/* //TODO: Only show when there is a Google drive account to sync */}
+                : ""}
             </h1>
 
             <div className="w-20 relative">
               <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSle5CxW6QjBz4FH6p5szdloz2gPoQLJ8Outg&s" //TODO: replace with actual profile image from Google Account
+                src={
+                  session?.user?.image ??
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSle5CxW6QjBz4FH6p5szdloz2gPoQLJ8Outg&s"
+                }
                 alt="profile"
-                className="w-12 h-12 rounded-full bg-(--secondary-foreground)/20 cursor-pointer"
-                onClick={() => setIsMenuExpanded(!isMenuExpanded)}
+                className="max-w-12 min-w-12 max-h-12 min-h-12 rounded-full bg-(--secondary-foreground)/20 cursor-pointer"
+                onClick={() =>
+                  session
+                    ? setIsMenuExpanded(!isMenuExpanded)
+                    : (window.location.href = "/settings")
+                }
               />
 
               {isMenuExpanded && (
@@ -54,7 +62,14 @@ export default function Home() {
                   <nav className="absolute w-48 h-42 grid justify-center gap-5 p-5 border-(--accent) border right-0 top-15 rounded-xl text-(--accent) z-30">
                     <button className="cursor-pointer">Sync</button>
                     <Link href="/settings">Settings</Link>
-                    <button className="cursor-pointer">Logout</button>
+                    <button
+                      onClick={() => {
+                        signOut();
+                      }}
+                      className="cursor-pointer"
+                    >
+                      Logout
+                    </button>
                   </nav>
                   <div
                     className="w-screen h-screen fixed top-0 left-0"

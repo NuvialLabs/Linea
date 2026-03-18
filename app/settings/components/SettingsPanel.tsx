@@ -4,6 +4,7 @@ import GoogleCalendar from "@/assets/icons/google-calendar.webp";
 import AppleCalendar from "@/assets/icons/apple-calendar.webp";
 import OutlookCalendar from "@/assets/icons/outlook-calendar.webp";
 import NotionCalendar from "@/assets/icons/notion-calendar.webp";
+import { signOut } from "next-auth/react";
 
 const SettingsPanel = () => {
   const [syncDate, setSyncDate] = useState<Date | null>(new Date("2/3/2026")); //TODO: replace with actual last sync date
@@ -40,6 +41,7 @@ const SettingsPanel = () => {
         <div className="flex mt-4 gap-4 w-full">
           {themes.map((_, index) => (
             <div
+              key={`theme-${index}`}
               onMouseDown={() => {
                 setSelectedTheme(index);
               }}
@@ -85,7 +87,12 @@ const SettingsPanel = () => {
         <button className="rounded-md bg-[#FF5621] h-10 w-30 font-semibold text-white cursor-pointer hover:bg-[#FF5621]/80 active:bg-[#FF5621]/60">
           Wipe Data
         </button>
-        <button className="rounded-md bg-[#575b57] h-10 w-20 font-semibold text-white cursor-pointer hover:bg-[#575b57]/80 active:bg-[#575b57]/60">
+        <button
+          onClick={() => {
+            signOut();
+          }}
+          className="rounded-md bg-[#575b57] h-10 w-20 font-semibold text-white cursor-pointer hover:bg-[#575b57]/80 active:bg-[#575b57]/60"
+        >
           Logout
         </button>
       </div>

@@ -6,8 +6,11 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.svg";
 import SignupPlaceholder from "./components/SignupPlaceholder";
 import SettingsPanel from "./components/SettingsPanel";
+import { useSession } from "next-auth/react";
 
 export default function Settings() {
+  const { data: session } = useSession();
+
   return (
     <main className=" w-screen grid place-items-between justify-items-center">
       <Background />
@@ -28,14 +31,17 @@ export default function Settings() {
           </h1>
 
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSle5CxW6QjBz4FH6p5szdloz2gPoQLJ8Outg&s" //TODO: replace with actual profile image from Google Account
+            src={
+              session?.user?.image ??
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSle5CxW6QjBz4FH6p5szdloz2gPoQLJ8Outg&s"
+            }
             alt="profile"
             className="w-12 h-12 rounded-full bg-(--secondary-foreground)/20"
           />
         </div>
       </nav>
 
-      {true ? <SettingsPanel /> : <SignupPlaceholder />}
+      {session ? <SettingsPanel /> : <SignupPlaceholder />}
     </main>
   );
 }
