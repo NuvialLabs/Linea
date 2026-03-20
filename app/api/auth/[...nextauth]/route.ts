@@ -1,8 +1,8 @@
 import { env } from "@/config/env";
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: env.google.clientId,
@@ -17,12 +17,16 @@ const handler = NextAuth({
       },
     }),
   ],
+  secret: env.nextAuth.secret,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, account, user }) {
       if (account && user) {
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + account.expires_at! * 1000,
+          accessTokenExpires: Date.now() + account.expires_at!,
           refreshToken: account.refresh_token,
           user,
         };
@@ -41,7 +45,9 @@ const handler = NextAuth({
       return session;
     },
   },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 async function refreshAccessToken(token: any) {
   try {
@@ -64,7 +70,7 @@ async function refreshAccessToken(token: any) {
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
-      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
     };
   } catch (error) {

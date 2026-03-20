@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import GoogleCalendar from "@/assets/icons/google-calendar.webp";
 import AppleCalendar from "@/assets/icons/apple-calendar.webp";
 import OutlookCalendar from "@/assets/icons/outlook-calendar.webp";
 import NotionCalendar from "@/assets/icons/notion-calendar.webp";
 import { signOut } from "next-auth/react";
+import { checkIfSameDate } from "@/utils/date_methods";
+import { useDrive } from "@/hooks/useDrive";
+import TimelineStore from "@/stores/timeline-store";
 
 const SettingsPanel = () => {
-  const [syncDate, setSyncDate] = useState<Date | null>(new Date("2/3/2026")); //TODO: replace with actual last sync date
+  const { timelines, setTimelines, lastUpdatedToDrive, setLastUpdatedToDrive } =
+    TimelineStore();
+  const { saveData, deleteData } = useDrive();
   const [selectedTheme, setSelectedTheme] = useState(0);
   const themes = ["", "", ""];
 
@@ -22,11 +27,38 @@ const SettingsPanel = () => {
           </p>
 
           <div className="flex items-center gap-4 md:mt-0 mt-5">
-            <button className="md:hidden block rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60">
+            <button
+              onClick={async () => {
+                const result = await saveData(timelines);
+                if (result) {
+                  setLastUpdatedToDrive(new Date(result.modifiedTime));
+                }
+              }}
+              className="md:hidden block rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60"
+            >
               Sync
             </button>
-            <h1 className="text-(--secondary-foreground)/60 text-sm">{`Last synced: ${syncDate?.toLocaleDateString()}`}</h1>
-            <button className="md:block hidden rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60">
+            <h1 className="text-(--secondary-foreground)/60 text-sm">
+              {lastUpdatedToDrive
+                ? `Last synced: ${
+                    checkIfSameDate(lastUpdatedToDrive, new Date())
+                      ? lastUpdatedToDrive.toLocaleTimeString(undefined, {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : lastUpdatedToDrive.toLocaleDateString()
+                  }`
+                : ""}
+            </h1>
+            <button
+              onClick={async () => {
+                const result = await saveData(timelines);
+                if (result) {
+                  setLastUpdatedToDrive(new Date(result.modifiedTime));
+                }
+              }}
+              className="md:block hidden rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60"
+            >
               Sync
             </button>
           </div>
@@ -84,7 +116,18 @@ const SettingsPanel = () => {
       </div>
 
       <div className="w-full flex flex-wrap sm:justify-end justify-center gap-4 mt-12">
-        <button className="rounded-md bg-[#FF5621] h-10 w-30 font-semibold text-white cursor-pointer hover:bg-[#FF5621]/80 active:bg-[#FF5621]/60">
+        <button
+          onClick={async () => {
+            const isDeleted = await deleteData();
+
+            if (isDeleted) {
+              setTimelines([]);
+              setLastUpdatedToDrive(undefined);
+              window.location.href = "/";
+            }
+          }}
+          className="rounded-md bg-[#FF5621] h-10 w-30 font-semibold text-white cursor-pointer hover:bg-[#FF5621]/80 active:bg-[#FF5621]/60"
+        >
           Wipe Data
         </button>
         <button

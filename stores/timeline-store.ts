@@ -40,6 +40,8 @@ interface TimelineStore {
   initialDate?: Date;
   setInitialDate: (date?: Date) => void;
   isEventModalOpen: boolean;
+  lastUpdatedToDrive?: Date;
+  setLastUpdatedToDrive: (date?: Date) => void;
   error?: string;
   setError: (value?: string) => void;
   setIsEventModalOpen: (isOpen: boolean) => void;
@@ -116,6 +118,9 @@ export default create<TimelineStore>((set, get) => ({
   isEventModalOpen: false,
   setIsEventModalOpen(isOpen: boolean) {
     set({ isEventModalOpen: isOpen });
+  },
+  setLastUpdatedToDrive: (date?: Date) => {
+    set({ lastUpdatedToDrive: date });
   },
   setError: (value) => {
     set({ error: value });

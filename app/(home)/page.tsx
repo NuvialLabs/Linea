@@ -4,19 +4,50 @@ import Image from "next/image";
 import Link from "next/link";
 import Background from "@/global/components/Background";
 import logo from "@/assets/images/logo.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TopicMenu, Timeline, TimelineControls } from "./components";
 import NewEventModal from "./components/NewEventModal";
 import TimelineStore from "@/stores/timeline-store";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
+import { useDrive } from "@/hooks/useDrive";
+import { checkIfSameDate } from "@/utils/date_methods";
+import { Timeline as TimelineType } from "@/global/types";
 
 export default function Home() {
-  const { error, setError } = TimelineStore();
+  const {
+    error,
+    setError,
+    timelines,
+    setTimelines,
+    lastUpdatedToDrive,
+    setLastUpdatedToDrive,
+  } = TimelineStore();
   const { data: session } = useSession();
-
-  const [syncDate, setSyncDate] = useState<Date>(new Date("1/1/1970")); //TODO: replace with actual last sync date
+  const { readData, saveData } = useDrive();
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
+
+  useEffect(() => {
+    readData().then((driveData) => {
+      if (!driveData) return;
+
+      const { data, lastUpdated } = driveData;
+      console.log(data);
+      const parsedData = (data ?? []).map((item: TimelineType) => {
+        return {
+          ...item,
+          events: item.events.map((event) => ({
+            ...event,
+            initialDate: new Date(event.initialDate),
+            endDate: event.endDate && new Date(event.endDate),
+          })),
+        };
+      });
+
+      setTimelines(parsedData);
+      setLastUpdatedToDrive(new Date(lastUpdated));
+    });
+  }, []);
 
   return (
     <main className=" w-screen grid place-items-between justify-items-center">
@@ -37,8 +68,15 @@ export default function Home() {
 
           <aside className="grid sm:flex sm:items-center justify-items-end justify-end gap-4 w-1/3">
             <h1 className="text-(--secondary-foreground) text-[10px] sm:text-[14px] text-end">
-              {session
-                ? `Last synced: ${syncDate.toLocaleDateString()} ${syncDate.toLocaleTimeString()}`
+              {lastUpdatedToDrive
+                ? `Last synced: ${
+                    checkIfSameDate(lastUpdatedToDrive, new Date())
+                      ? lastUpdatedToDrive.toLocaleTimeString(undefined, {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : lastUpdatedToDrive.toLocaleDateString()
+                  }`
                 : ""}
             </h1>
 
@@ -60,7 +98,18 @@ export default function Home() {
               {isMenuExpanded && (
                 <>
                   <nav className="absolute w-48 h-42 grid justify-center gap-5 p-5 border-(--accent) border right-0 top-15 rounded-xl text-(--accent) z-30">
-                    <button className="cursor-pointer">Sync</button>
+                    <button
+                      className="cursor-pointer"
+                      onClick={async () => {
+                        const result = await saveData(timelines);
+                        if (result) {
+                          setLastUpdatedToDrive(new Date(result.modifiedTime));
+                        }
+                        setIsMenuExpanded(false);
+                      }}
+                    >
+                      Sync
+                    </button>
                     <Link href="/settings">Settings</Link>
                     <button
                       onClick={() => {

@@ -7,6 +7,7 @@ import { COLORS, PRIMARY_COLOR } from "@/global/constants";
 import ColorInput from "./components/ColorInput";
 import { validateInputs, FormData } from "./utils";
 import { Event } from "@/global/types";
+import { useDrive } from "@/hooks/useDrive";
 
 const NewEventModal = () => {
   const {
@@ -18,6 +19,7 @@ const NewEventModal = () => {
     setSelectedTimeline,
     timelines,
     setTimelines,
+    setLastUpdatedToDrive,
   } = TimelineStore();
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
@@ -27,6 +29,7 @@ const NewEventModal = () => {
   const [color, setColor] = useState<string | undefined>();
   const [colors, setColors] = useState<string[]>([...COLORS]);
   const [errors, setErrors] = useState<FormData>({ hasErrors: false });
+  const { saveData } = useDrive();
 
   useEffect(() => {
     if (initialDate) {
@@ -36,7 +39,7 @@ const NewEventModal = () => {
     }
   }, [initialDate]);
 
-  const onSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const onSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const result = validateInputs(title, startDate, link, endDate);
 
@@ -71,6 +74,10 @@ const NewEventModal = () => {
 
       setTimelines(newTimelines);
       setSelectedTimeline(selectedTimeline);
+      const result = await saveData(timelines);
+      if (result) {
+        setLastUpdatedToDrive(new Date(result.modifiedTime));
+      }
     }
 
     setIsEventModalOpen(false);

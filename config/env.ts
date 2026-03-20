@@ -8,7 +8,14 @@ const envSchema = Joi.object({
   GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
   GOOGLE_AUTH_CLIENT_SECRET: Joi.string().required(),
 
-  DRIVE_DATA_FOLDER_NAME: Joi.string().default("Linea_Data"),
+  DRIVE_DATA_FILE_NAME: Joi.string().default("Linea_Data"),
+
+  NEXTAUTH_URL: Joi.string()
+    .required()
+    .description("Required for redirect callback"),
+  NEXTAUTH_SECRET: Joi.string()
+    .required()
+    .description("Required for session encryption"),
 })
   .unknown()
   .required();
@@ -31,5 +38,5 @@ export const env = {
     clientId: envVars.GOOGLE_AUTH_CLIENT_ID,
     clientSecret: envVars.GOOGLE_AUTH_CLIENT_SECRET,
   },
-  driveFolderName: envVars.DRIVE_DATA_FOLDER_NAME,
+  driveFileName: envVars.DRIVE_DATA_FILE_NAME,
 };
