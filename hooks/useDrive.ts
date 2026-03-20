@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { StatusCodes } from "http-status-codes";
 
 export const useDrive = () => {
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const readData = async () => {
@@ -14,6 +14,7 @@ export const useDrive = () => {
 
       if (response.status === StatusCodes.UNAUTHORIZED) {
         console.warn("Session expired");
+        setError("Session Expired");
         return;
       }
 
@@ -27,7 +28,7 @@ export const useDrive = () => {
 
       return result;
     } catch (err: any) {
-      setError(err.message);
+      setError(err);
       return null;
     } finally {
       setIsSyncing(false);
@@ -46,8 +47,8 @@ export const useDrive = () => {
       });
 
       if (response.status === 401) {
-        setError("Session expired. Redirecting to login...");
-        signIn("google");
+        console.warn("Session expired");
+        setError("Session expired.");
         return;
       }
 
@@ -65,7 +66,7 @@ export const useDrive = () => {
   };
 
   const deleteData = async () => {
-    setIsSyncing(true);
+    setIsDeleting(true);
     try {
       const response = await fetch("/api/drive", {
         method: "DELETE",
@@ -78,9 +79,17 @@ export const useDrive = () => {
       console.error(err.message);
       return false;
     } finally {
-      setIsSyncing(false);
+      setIsDeleting(false);
     }
   };
 
-  return { saveData, readData, deleteData, isSyncing, error };
+  return {
+    saveData,
+    readData,
+    deleteData,
+    isSyncing,
+    error,
+    setError,
+    isDeleting,
+  };
 };

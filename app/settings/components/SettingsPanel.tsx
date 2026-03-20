@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import GoogleCalendar from "@/assets/icons/google-calendar.webp";
 import AppleCalendar from "@/assets/icons/apple-calendar.webp";
@@ -8,11 +8,12 @@ import { signOut } from "next-auth/react";
 import { checkIfSameDate } from "@/utils/date_methods";
 import { useDrive } from "@/hooks/useDrive";
 import TimelineStore from "@/stores/timeline-store";
+import { Oval } from "react-loader-spinner";
 
 const SettingsPanel = () => {
   const { timelines, setTimelines, lastUpdatedToDrive, setLastUpdatedToDrive } =
     TimelineStore();
-  const { saveData, deleteData } = useDrive();
+  const { saveData, deleteData, isSyncing, isDeleting } = useDrive();
   const [selectedTheme, setSelectedTheme] = useState(0);
   const themes = ["", "", ""];
 
@@ -27,17 +28,34 @@ const SettingsPanel = () => {
           </p>
 
           <div className="flex items-center gap-4 md:mt-0 mt-5">
-            <button
-              onClick={async () => {
-                const result = await saveData(timelines);
-                if (result) {
-                  setLastUpdatedToDrive(new Date(result.modifiedTime));
-                }
-              }}
-              className="md:hidden block rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60"
-            >
-              Sync
-            </button>
+            {isSyncing ? (
+              <div className="md:hidden block">
+                <Oval
+                  height={20}
+                  width={20}
+                  color="var(--accent)"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  ariaLabel="oval-loading"
+                  secondaryColor="var(--accent-faded)"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+                />
+              </div>
+            ) : (
+              <button
+                onClick={async () => {
+                  const result = await saveData(timelines);
+                  if (result) {
+                    setLastUpdatedToDrive(new Date(result.modifiedTime));
+                  }
+                }}
+                className="md:hidden block rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60"
+              >
+                Sync
+              </button>
+            )}
             <h1 className="text-(--secondary-foreground)/60 text-sm">
               {lastUpdatedToDrive
                 ? `Last synced: ${
@@ -50,17 +68,32 @@ const SettingsPanel = () => {
                   }`
                 : ""}
             </h1>
-            <button
-              onClick={async () => {
-                const result = await saveData(timelines);
-                if (result) {
-                  setLastUpdatedToDrive(new Date(result.modifiedTime));
-                }
-              }}
-              className="md:block hidden rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60"
-            >
-              Sync
-            </button>
+            {isSyncing ? (
+              <Oval
+                height={20}
+                width={20}
+                color="var(--accent)"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={true}
+                ariaLabel="oval-loading"
+                secondaryColor="var(--accent-faded)"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+              />
+            ) : (
+              <button
+                onClick={async () => {
+                  const result = await saveData(timelines);
+                  if (result) {
+                    setLastUpdatedToDrive(new Date(result.modifiedTime));
+                  }
+                }}
+                className="md:block hidden rounded-md bg-[#665945] h-10 w-20 text-lg font-semibold text-white cursor-pointer hover:bg-[#665945]/80 active:bg-[#665945]/60"
+              >
+                Sync
+              </button>
+            )}
           </div>
         </div>
 
@@ -115,21 +148,36 @@ const SettingsPanel = () => {
         </div>
       </div>
 
-      <div className="w-full flex flex-wrap sm:justify-end justify-center gap-4 mt-12">
-        <button
-          onClick={async () => {
-            const isDeleted = await deleteData();
+      <div className="w-full flex flex-wrap sm:justify-end items-center justify-center gap-4 mt-12">
+        {isDeleting ? (
+          <Oval
+            height={30}
+            width={30}
+            color="var(--accent)"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+            ariaLabel="oval-loading"
+            secondaryColor="var(--accent-faded)"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+          />
+        ) : (
+          <button
+            onClick={async () => {
+              const isDeleted = await deleteData();
 
-            if (isDeleted) {
-              setTimelines([]);
-              setLastUpdatedToDrive(undefined);
-              window.location.href = "/";
-            }
-          }}
-          className="rounded-md bg-[#FF5621] h-10 w-30 font-semibold text-white cursor-pointer hover:bg-[#FF5621]/80 active:bg-[#FF5621]/60"
-        >
-          Wipe Data
-        </button>
+              if (isDeleted) {
+                setTimelines([]);
+                setLastUpdatedToDrive(undefined);
+                window.location.href = "/";
+              }
+            }}
+            className="rounded-md bg-[#FF5621] h-10 w-30 font-semibold text-white cursor-pointer hover:bg-[#FF5621]/80 active:bg-[#FF5621]/60"
+          >
+            Wipe Data
+          </button>
+        )}
         <button
           onClick={() => {
             signOut();

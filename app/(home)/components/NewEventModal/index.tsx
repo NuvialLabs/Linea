@@ -9,6 +9,7 @@ import { validateInputs, FormData } from "./utils";
 import { Event } from "@/global/types";
 import { useDrive } from "@/hooks/useDrive";
 import { useSession } from "next-auth/react";
+import { Oval } from "react-loader-spinner";
 
 const NewEventModal = () => {
   const {
@@ -30,7 +31,7 @@ const NewEventModal = () => {
   const [color, setColor] = useState<string | undefined>();
   const [colors, setColors] = useState<string[]>([...COLORS]);
   const [errors, setErrors] = useState<FormData>({ hasErrors: false });
-  const { saveData } = useDrive();
+  const { saveData, isSyncing } = useDrive();
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -197,13 +198,28 @@ const NewEventModal = () => {
                 <ColorInput setColors={setColors} />
               </div>
 
-              <button
-                type="button"
-                onMouseDown={onSubmit}
-                className="px-4 py-1 bg-(--accent) text-white rounded-md hover:bg-(--accent)/70 transition-colors duration-200 cursor-pointer"
-              >
-                Submit
-              </button>
+              {isSyncing ? (
+                <Oval
+                  height={28}
+                  width={28}
+                  color="var(--accent)"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                  ariaLabel="oval-loading"
+                  secondaryColor="var(--accent-faded)"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+                />
+              ) : (
+                <button
+                  type="button"
+                  onMouseDown={onSubmit}
+                  className="px-4 py-1 bg-(--accent) text-white rounded-md hover:bg-(--accent)/70 transition-colors duration-200 cursor-pointer"
+                >
+                  Submit
+                </button>
+              )}
             </div>
           </div>
         </form>

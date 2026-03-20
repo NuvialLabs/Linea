@@ -13,6 +13,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useDrive } from "@/hooks/useDrive";
 import { checkIfSameDate } from "@/utils/date_methods";
 import { Timeline as TimelineType } from "@/global/types";
+import { Oval } from "react-loader-spinner";
 
 export default function Home() {
   const {
@@ -24,7 +25,13 @@ export default function Home() {
     setLastUpdatedToDrive,
   } = TimelineStore();
   const { data: session } = useSession();
-  const { readData, saveData } = useDrive();
+  const {
+    readData,
+    saveData,
+    isSyncing,
+    error: driverError,
+    setError: setDriverError,
+  } = useDrive();
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
 
   useEffect(() => {
@@ -34,7 +41,7 @@ export default function Home() {
       if (!driveData) return;
 
       const { data, lastUpdated } = driveData;
-      console.log(data);
+
       const parsedData = (data ?? []).map((item: TimelineType) => {
         return {
           ...item,
@@ -69,18 +76,33 @@ export default function Home() {
           <TopicMenu isEmbedded={false} />
 
           <aside className="grid sm:flex sm:items-center justify-items-end justify-end gap-4 w-1/3">
-            <h1 className="text-(--secondary-foreground) text-[10px] sm:text-[14px] text-end">
-              {lastUpdatedToDrive
-                ? `Last synced: ${
-                    checkIfSameDate(lastUpdatedToDrive, new Date())
-                      ? lastUpdatedToDrive.toLocaleTimeString(undefined, {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : lastUpdatedToDrive.toLocaleDateString()
-                  }`
-                : ""}
-            </h1>
+            {isSyncing ? (
+              <Oval
+                height={20}
+                width={20}
+                color="var(--accent)"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={true}
+                ariaLabel="oval-loading"
+                secondaryColor="var(--accent-faded)"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+              />
+            ) : (
+              <h1 className="text-(--secondary-foreground) text-[10px] sm:text-[14px] text-end">
+                {lastUpdatedToDrive
+                  ? `Last synced: ${
+                      checkIfSameDate(lastUpdatedToDrive, new Date())
+                        ? lastUpdatedToDrive.toLocaleTimeString(undefined, {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : lastUpdatedToDrive.toLocaleDateString()
+                    }`
+                  : ""}
+              </h1>
+            )}
 
             <div className="w-20 relative">
               <img
@@ -99,21 +121,38 @@ export default function Home() {
 
               {isMenuExpanded && (
                 <>
-                  <nav className="absolute w-48 h-42 grid justify-center gap-5 p-5 border-(--accent) border right-0 top-15 rounded-xl text-(--accent) z-30">
-                    <button
-                      className="cursor-pointer"
-                      onClick={async () => {
-                        const result = await saveData(timelines);
+                  <nav className="absolute w-48 h-42 grid justify-center justify-items-center gap-5 p-5 border-(--accent) border right-0 top-15 rounded-xl text-(--accent) z-30">
+                    {isSyncing ? (
+                      <Oval
+                        height={20}
+                        width={20}
+                        color="var(--accent)"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                        visible={true}
+                        ariaLabel="oval-loading"
+                        secondaryColor="var(--accent-faded)"
+                        strokeWidth={2}
+                        strokeWidthSecondary={2}
+                      />
+                    ) : (
+                      <button
+                        className="cursor-pointer"
+                        onClick={async () => {
+                          const result = await saveData(timelines);
 
-                        if (result) {
-                          setLastUpdatedToDrive(new Date(result.modifiedTime));
-                        }
+                          if (result) {
+                            setLastUpdatedToDrive(
+                              new Date(result.modifiedTime),
+                            );
+                          }
 
-                        setIsMenuExpanded(false);
-                      }}
-                    >
-                      Sync
-                    </button>
+                          setIsMenuExpanded(false);
+                        }}
+                      >
+                        Sync
+                      </button>
+                    )}
                     <Link href="/settings">Settings</Link>
                     <button
                       onClick={() => {
@@ -136,12 +175,13 @@ export default function Home() {
       </nav>
       <Timeline />
       <div className="grid justify-items-center">
-        {error && (
+        {(error || driverError) && (
           <span className="text-sm text-red-500 font-semibold rounded-full bg-red-900/20 px-4 py-2 flex items-center gap-2 relative z-50">
-            {error}
+            {driverError ?? error}
             <XMarkIcon
               onMouseDown={() => {
                 setError(undefined);
+                setDriverError(null);
               }}
               className="h-5 rounded-full bg-red-500/30 p-1 cursor-pointer"
             />

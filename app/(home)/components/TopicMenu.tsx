@@ -230,7 +230,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                             className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                           />
                         }
-                        tooltip="Delete" //TODO: When all timelines are deleted reset the timeline ruler to an empty state
+                        tooltip="Delete"
                       />
 
                       <XCircleIcon
