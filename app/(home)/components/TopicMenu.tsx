@@ -224,6 +224,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                                     prevTimeline.id !== timeline.id,
                                 ),
                               );
+                              setSelectedTimeline(null);
                               setEditingTimeline(undefined);
                             }}
                             className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
