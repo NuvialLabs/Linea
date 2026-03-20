@@ -8,6 +8,7 @@ import ColorInput from "./components/ColorInput";
 import { validateInputs, FormData } from "./utils";
 import { Event } from "@/global/types";
 import { useDrive } from "@/hooks/useDrive";
+import { useSession } from "next-auth/react";
 
 const NewEventModal = () => {
   const {
@@ -30,6 +31,7 @@ const NewEventModal = () => {
   const [colors, setColors] = useState<string[]>([...COLORS]);
   const [errors, setErrors] = useState<FormData>({ hasErrors: false });
   const { saveData } = useDrive();
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (initialDate) {
@@ -74,9 +76,12 @@ const NewEventModal = () => {
 
       setTimelines(newTimelines);
       setSelectedTimeline(selectedTimeline);
-      const result = await saveData(timelines);
-      if (result) {
-        setLastUpdatedToDrive(new Date(result.modifiedTime));
+
+      if (session) {
+        const result = await saveData(timelines);
+        if (result) {
+          setLastUpdatedToDrive(new Date(result.modifiedTime));
+        }
       }
     }
 

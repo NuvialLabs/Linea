@@ -28,6 +28,8 @@ export default function Home() {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false);
 
   useEffect(() => {
+    if (!session) return;
+
     readData().then((driveData) => {
       if (!driveData) return;
 
@@ -47,7 +49,7 @@ export default function Home() {
       setTimelines(parsedData);
       setLastUpdatedToDrive(new Date(lastUpdated));
     });
-  }, []);
+  }, [session]);
 
   return (
     <main className=" w-screen grid place-items-between justify-items-center">
@@ -102,9 +104,11 @@ export default function Home() {
                       className="cursor-pointer"
                       onClick={async () => {
                         const result = await saveData(timelines);
+
                         if (result) {
                           setLastUpdatedToDrive(new Date(result.modifiedTime));
                         }
+
                         setIsMenuExpanded(false);
                       }}
                     >
