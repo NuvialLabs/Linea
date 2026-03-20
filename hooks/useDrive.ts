@@ -55,7 +55,7 @@ export const useDrive = () => {
       if (!response.ok) throw new Error("Failed to save to Drive");
 
       const body = await response.json();
-      console.log(body);
+
       return body;
     } catch (error) {
       console.error(error);
