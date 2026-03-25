@@ -9,13 +9,61 @@ import { checkIfSameDate } from "@/utils/date_methods";
 import { useDrive } from "@/hooks/useDrive";
 import TimelineStore from "@/stores/timeline-store";
 import { Oval } from "react-loader-spinner";
+import { COLORS } from "@/global/constants";
+import Spinner from "@/global/components/Spinner";
+import { Event } from "@/global/types";
 
 const SettingsPanel = () => {
   const { timelines, setTimelines, lastUpdatedToDrive, setLastUpdatedToDrive } =
     TimelineStore();
   const { saveData, deleteData, isSyncing, isDeleting } = useDrive();
   const [selectedTheme, setSelectedTheme] = useState(0);
+  const [isFetchingGoogleCalendar, setIsFetchingGoogleCalendar] =
+    useState(false);
+  const [isFetchingOutlookCalendar, setIsFetchingOutlookCalendar] =
+    useState(false);
   const themes = ["", "", ""];
+
+  const fetchGoogleCalendar = async () => {
+    try {
+      setIsFetchingGoogleCalendar(true);
+      const response = await fetch("/api/calendar");
+      const data = await response.json();
+
+      const events: Event[] = data.map((item: any) => {
+        return {
+          id: item.id,
+          name: item.summary,
+          initialDate: new Date(item.start.date ?? item.start.dateTime),
+          color: COLORS[3],
+          description: item.description,
+          link: item.htmlLink,
+        };
+      });
+
+      const uniqueEvents = new Map();
+      events.forEach((event: Event) => {
+        uniqueEvents.set(event.id, event);
+      });
+
+      const googleTimeline = {
+        id: "google-calendar",
+        name: "Google Calendar",
+        events: Array.from<Event>(uniqueEvents.values()).toReversed(),
+      };
+
+      timelines.push(googleTimeline);
+
+      setTimelines(timelines);
+      await saveData(timelines);
+
+      setIsFetchingGoogleCalendar(false);
+      window.location.href = "/";
+    } catch (error) {
+      console.error(error);
+      setIsFetchingGoogleCalendar(false);
+    }
+  };
 
   return (
     <section className="sm:w-[80%] bg-(--secondary-background) rounded-3xl grid gap-4 mt-12 px-16 py-8">
@@ -28,7 +76,7 @@ const SettingsPanel = () => {
           </p>
 
           <div className="flex items-center gap-4 md:mt-0 mt-5">
-            {isSyncing ? (
+            {isSyncing && !isFetchingGoogleCalendar ? (
               <div className="md:hidden block">
                 <Oval
                   height={20}
@@ -125,25 +173,27 @@ const SettingsPanel = () => {
         </p>
 
         <div className="flex flex-wrap items-center mt-6 gap-4">
-          <Image
-            src={GoogleCalendar}
-            alt="Google Calendar"
-            className="w-12 h-12 cursor-pointer"
+          <Spinner
+            isLoading={isFetchingGoogleCalendar}
+            children={
+              <Image
+                src={GoogleCalendar}
+                alt="Google Calendar"
+                className={`w-12 h-12 cursor-pointer ${isFetchingGoogleCalendar ? "-scale-50 rotate-180" : ""} duration-300`}
+                onMouseDown={fetchGoogleCalendar}
+              />
+            }
           />
-          <Image
-            src={OutlookCalendar}
-            alt="Outlook Calendar"
-            className="w-12 h-12 cursor-pointer"
-          />
-          <Image
-            src={AppleCalendar}
-            alt="Apple Calendar"
-            className="w-12 h-12 cursor-pointer"
-          />
-          <Image
-            src={NotionCalendar}
-            alt="Notion Calendar"
-            className="w-12 h-12 cursor-pointer"
+
+          <Spinner
+            isLoading={isFetchingOutlookCalendar}
+            children={
+              <Image
+                src={OutlookCalendar}
+                alt="Outlook Calendar"
+                className={`w-12 h-12 cursor-pointer ${isFetchingOutlookCalendar ? "-scale-50 rotate-180" : ""} duration-300`}
+              />
+            }
           />
         </div>
       </div>
