@@ -22,6 +22,8 @@ const PointMark = ({ events }: { events: Event[] }) => {
     selectedTimeline,
     setSelectedTimeline,
     setLastUpdatedToDrive,
+    setEditingEvent,
+    setIsEventModalOpen,
   } = TimelineStore();
 
   const [eventIndex, setEventIndex] = useState(0);
@@ -126,7 +128,10 @@ const PointMark = ({ events }: { events: Event[] }) => {
             {keepExpanded && (
               <PencilIcon
                 className="w-4 h-4 cursor-pointer"
-                onMouseDown={() => {}}
+                onMouseDown={() => {
+                  setEditingEvent(currentEvent);
+                  setIsEventModalOpen(true);
+                }}
               />
             )}
             {keepExpanded && (

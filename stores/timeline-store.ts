@@ -3,6 +3,7 @@ import { addDays, subtractDays } from "@/utils/date_methods";
 import { updateCurrentDateFromScroll } from "@/utils/slider_methods";
 import { createRef } from "react";
 import { create } from "zustand";
+import { Event } from "@/global/types";
 
 let startX = 0;
 let startScrollLeft = 0;
@@ -43,6 +44,8 @@ interface TimelineStore {
   lastUpdatedToDrive?: Date;
   setLastUpdatedToDrive: (date?: Date) => void;
   error?: string;
+  editingEvent?: Event;
+  setEditingEvent: (event?: Event) => void;
   setError: (value?: string) => void;
   setIsEventModalOpen: (isOpen: boolean) => void;
   onPointerDown: (e: React.PointerEvent) => void;
@@ -116,6 +119,10 @@ export default create<TimelineStore>((set, get) => ({
     set({ initialDate: date });
   },
   isEventModalOpen: false,
+  editingEvent: undefined,
+  setEditingEvent(event?: Event) {
+    set({ editingEvent: event });
+  },
   setIsEventModalOpen(isOpen: boolean) {
     set({ isEventModalOpen: isOpen });
   },

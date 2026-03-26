@@ -22,6 +22,8 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
     selectedTimeline,
     setSelectedTimeline,
     setLastUpdatedToDrive,
+    setEditingEvent,
+    setIsEventModalOpen,
   } = TimelineStore();
 
   const [eventIndex, setEventIndex] = useState(0);
@@ -127,7 +129,10 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
             {isEnlarged && (
               <PencilIcon
                 className="w-4 h-4 cursor-pointer"
-                onMouseDown={() => {}}
+                onMouseDown={() => {
+                  setEditingEvent(currentEvent);
+                  setIsEventModalOpen(true);
+                }}
               />
             )}
             {isEnlarged && (

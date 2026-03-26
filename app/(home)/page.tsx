@@ -6,7 +6,7 @@ import Background from "@/global/components/Background";
 import logo from "@/assets/images/logo.svg";
 import { useEffect, useState } from "react";
 import { TopicMenu, Timeline, TimelineControls } from "./components";
-import NewEventModal from "./components/NewEventModal";
+import EventModal from "./components/EventModal";
 import TimelineStore from "@/stores/timeline-store";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { signOut, useSession } from "next-auth/react";
@@ -190,7 +190,7 @@ export default function Home() {
         <TimelineControls isEmbedded={false} />
       </div>
 
-      <NewEventModal />
+      <EventModal />
     </main>
   );
 }

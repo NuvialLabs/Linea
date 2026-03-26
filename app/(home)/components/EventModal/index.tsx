@@ -11,8 +11,10 @@ import { useDrive } from "@/hooks/useDrive";
 import { useSession } from "next-auth/react";
 import { Oval } from "react-loader-spinner";
 
-const NewEventModal = () => {
+const EventModal = () => {
   const {
+    editingEvent: event,
+    setEditingEvent,
     isEventModalOpen,
     setIsEventModalOpen,
     initialDate,
@@ -35,6 +37,48 @@ const NewEventModal = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
+    if (event) {
+      setTitle(event.name);
+      setLink(event?.link ?? "");
+      setStartDate(
+        `${event.initialDate.getFullYear()}-${String(
+          event.initialDate.getMonth() + 1,
+        ).padStart(2, "0")}-${String(event.initialDate.getDate()).padStart(
+          2,
+          "0",
+        )}`,
+      );
+      setEndDate(
+        event.endDate
+          ? `${event.endDate.getFullYear()}-${String(
+              event.endDate.getMonth() + 1,
+            ).padStart(2, "0")}-${String(event.endDate.getDate()).padStart(
+              2,
+              "0",
+            )}`
+          : undefined,
+      );
+      setDescription(event.description ?? "");
+
+      if (event.color && !colors.includes(event.color)) {
+        setColors((prev) => {
+          if (event.color && prev.includes(event.color)) return prev;
+
+          if (event.color && prev.length == COLORS.length) {
+            return [...prev, event.color];
+          }
+
+          return [
+            ...prev.filter((_, index) => index < COLORS.length),
+            event.color ?? PRIMARY_COLOR,
+          ];
+        });
+        setColor(event.color);
+      }
+    }
+  }, [event]);
+
+  useEffect(() => {
     if (initialDate) {
       setStartDate(
         `${initialDate.getFullYear()}-${String(initialDate.getMonth() + 1).padStart(2, "0")}-${String(initialDate.getDate()).padStart(2, "0")}`,
@@ -52,7 +96,7 @@ const NewEventModal = () => {
       return;
     }
 
-    const event: Event = {
+    const newEvent: Event = {
       id: crypto.randomUUID(),
       name: title,
       link,
@@ -63,11 +107,20 @@ const NewEventModal = () => {
     };
 
     if (selectedTimeline) {
-      selectedTimeline?.events.push(event);
+      if (event) {
+        selectedTimeline.events = selectedTimeline.events.map((item) => {
+          if (item.id === event.id) {
+            return newEvent;
+          }
+          return item;
+        });
+      } else {
+        selectedTimeline?.events.push(newEvent);
+      }
+
       selectedTimeline?.events.sort((a, b) => {
         return b.initialDate.getTime() - a.initialDate.getTime();
       });
-
       const newTimelines = timelines.map((timeline) => {
         if (timeline.id === selectedTimeline.id) {
           return selectedTimeline;
@@ -98,6 +151,8 @@ const NewEventModal = () => {
     setEndDate("");
     setDescription("");
     setColor("");
+    setColors(COLORS);
+    setEditingEvent(undefined);
   };
 
   return !isEventModalOpen ? (
@@ -117,7 +172,9 @@ const NewEventModal = () => {
           <Image src={NewEventHero} alt="" className="w-full sm:h-full mt-15" />
         </aside>
         <form className="md:w-1/2 px-11.25 py-5">
-          <h1 className="text-[24px] text-(--accent) font-bold">New Event</h1>
+          <h1 className="text-[24px] text-(--accent) font-bold">
+            {event ? "Edit Event" : "New Event"}
+          </h1>
 
           <div className="grid gap-3 mt-7">
             <div>
@@ -128,6 +185,7 @@ const NewEventModal = () => {
                 type="text"
                 className="w-full p-2 rounded-md bg-(--secondary-background) text-(--secondary-foreground) focus:outline-none focus:ring-2 focus:ring-(--accent) transition-all duration-200"
                 placeholder="Event"
+                value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
               {errors.title && (
@@ -167,6 +225,7 @@ const NewEventModal = () => {
                 type="text"
                 className="w-full p-2 rounded-md bg-(--secondary-background) text-(--secondary-foreground) focus:outline-none focus:ring-2 focus:ring-(--accent) transition-all duration-200 mt-2"
                 placeholder="External Link"
+                value={link}
                 onChange={(e) => setLink(e.target.value)}
               />
               {errors.link && (
@@ -180,6 +239,7 @@ const NewEventModal = () => {
               rows={4}
               className="w-full p-2 rounded-md bg-(--secondary-background) text-(--secondary-foreground) focus:outline-none focus:ring-2 focus:ring-(--accent) transition-all duration-200 resize-none mt-2"
               placeholder="Description"
+              value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <div className="flex justify-between items-center mt-3">
@@ -231,4 +291,4 @@ const NewEventModal = () => {
   );
 };
 
-export default NewEventModal;
+export default EventModal;
