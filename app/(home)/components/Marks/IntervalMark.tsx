@@ -13,6 +13,7 @@ import {
 } from "@heroicons/react/16/solid";
 import { differenceInDays } from "@/utils/date_methods";
 import { useDrive } from "@/hooks/useDrive";
+import { useSession } from "next-auth/react";
 
 const IntervalMark = ({ events }: { events: Event[] }) => {
   const {
@@ -35,6 +36,7 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
   const [isMouseOver, setIsMouseOver] = useState(false);
 
   const { saveData } = useDrive();
+  const { data: session } = useSession();
 
   const currentEvent = events[eventIndex];
   const isExpandable =
@@ -157,10 +159,12 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
                   setTimelines(updatedTimelines);
                   setEventIndex(0);
 
-                  const result = await saveData(updatedTimelines);
+                  if (session) {
+                    const result = await saveData(updatedTimelines);
 
-                  if (result) {
-                    setLastUpdatedToDrive(new Date(result.modifiedTime));
+                    if (result) {
+                      setLastUpdatedToDrive(new Date(result.modifiedTime));
+                    }
                   }
                 }}
                 className="w-4 h-4 cursor-pointer"

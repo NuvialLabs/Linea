@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import TimelineStore from "@/stores/timeline-store";
 import { checkIfImage, onAttachementClick } from "./utils";
 import { useDrive } from "@/hooks/useDrive";
+import { useSession } from "next-auth/react";
 
 const PointMark = ({ events }: { events: Event[] }) => {
   const {
@@ -31,7 +32,9 @@ const PointMark = ({ events }: { events: Event[] }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [keepExpanded, setKeepExpanded] = useState(false);
   const [isEnlarged, setIsEnlarged] = useState(false);
+
   const { saveData } = useDrive();
+  const { data: session } = useSession();
 
   const currentEvent = events[eventIndex];
   const isExpandable =
@@ -155,10 +158,12 @@ const PointMark = ({ events }: { events: Event[] }) => {
                   setSelectedTimeline(updatedTimeline);
                   setTimelines(updatedTimelines);
 
-                  const result = await saveData(updatedTimelines);
+                  if (session) {
+                    const result = await saveData(updatedTimelines);
 
-                  if (result) {
-                    setLastUpdatedToDrive(new Date(result.modifiedTime));
+                    if (result) {
+                      setLastUpdatedToDrive(new Date(result.modifiedTime));
+                    }
                   }
                 }}
                 className="w-4 h-4 cursor-pointer"

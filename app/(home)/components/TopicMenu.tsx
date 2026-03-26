@@ -25,6 +25,7 @@ import Image from "next/image";
 import Tooltip from "@/global/components/Tooltip";
 import { handleFileUpload } from "@/data/import";
 import { useDrive } from "@/hooks/useDrive";
+import { useSession } from "next-auth/react";
 
 const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const {
@@ -47,6 +48,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   >();
   const { saveData } = useDrive();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (timelines && timelines.length > 0) {
@@ -139,12 +141,14 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                             const updatedTimelines = [...timelines, value];
                             setTimelines(updatedTimelines);
 
-                            const result = await saveData(updatedTimelines);
+                            if (session) {
+                              const result = await saveData(updatedTimelines);
 
-                            if (result) {
-                              setLastUpdatedToDrive(
-                                new Date(result.modifiedTime),
-                              );
+                              if (result) {
+                                setLastUpdatedToDrive(
+                                  new Date(result.modifiedTime),
+                                );
+                              }
                             }
                           },
                           (error) => {
@@ -220,12 +224,14 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                               setTimelines(updatedTimelines);
                               setEditingTimeline(undefined);
 
-                              const result = await saveData(updatedTimelines);
+                              if (session) {
+                                const result = await saveData(updatedTimelines);
 
-                              if (result) {
-                                setLastUpdatedToDrive(
-                                  new Date(result.modifiedTime),
-                                );
+                                if (result) {
+                                  setLastUpdatedToDrive(
+                                    new Date(result.modifiedTime),
+                                  );
+                                }
                               }
                             }}
                             className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
@@ -247,12 +253,14 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                               setSelectedTimeline(null);
                               setEditingTimeline(undefined);
 
-                              const result = await saveData(updatedTimelines);
+                              if (session) {
+                                const result = await saveData(updatedTimelines);
 
-                              if (result) {
-                                setLastUpdatedToDrive(
-                                  new Date(result.modifiedTime),
-                                );
+                                if (result) {
+                                  setLastUpdatedToDrive(
+                                    new Date(result.modifiedTime),
+                                  );
+                                }
                               }
                             }}
                             className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
