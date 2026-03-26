@@ -42,6 +42,12 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
     );
   }, [eventIndex]);
 
+  useEffect(() => {
+    setContainerWidth(
+      (intervalRef.current?.offsetWidth ?? 0) < 58 ? "100%" : undefined,
+    );
+  }, []);
+
   return (
     <div className="relative group">
       <div className="grid justify-items-center gap-2 absolute z-30 -top-12 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
