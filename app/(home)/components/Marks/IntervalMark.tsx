@@ -1,6 +1,6 @@
 import TimelineStore from "@/stores/timeline-store";
 import { Event } from "@/global/types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { checkIfImage, onAttachementClick } from "./utils";
 import {
   ArrowsPointingInIcon,
@@ -15,8 +15,12 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
   const { zoomOptions } = TimelineStore();
 
   const [eventIndex, setEventIndex] = useState(0);
+  const [containerWidth, setContainerWidth] = useState<string | undefined>(
+    undefined,
+  );
   const [isImage, setIsImage] = useState(false);
   const [isEnlarged, setIsEnlarged] = useState(false);
+  const [isMouseOver, setIsMouseOver] = useState(false);
   const isExpandable =
     (events[eventIndex]?.description?.length ?? 0) > 82 ||
     events[eventIndex].link !== undefined;
@@ -24,6 +28,7 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
     events[eventIndex].endDate!,
     events[eventIndex].initialDate,
   );
+  const intervalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (events[eventIndex].link) {
@@ -31,6 +36,10 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
         setIsImage(res);
       });
     }
+
+    setContainerWidth(
+      (intervalRef.current?.offsetWidth ?? 0) > 200 ? "100%" : undefined,
+    );
   }, [eventIndex]);
 
   return (
@@ -67,15 +76,25 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
       </div>
 
       <div
+        ref={intervalRef}
         className={`${isEnlarged ? "h-50 overflow-auto" : "overflow-x-auto overflow-y-hidden h-10"} grid scrollbar-ui scrollbar-thin scrollbar-thumb bg-white rounded-t-sm text-white duration-300 transition-all`}
         style={{
           marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px`,
-          width: `${dateDifference * 12 * (1 + zoomOptions.level / 50)}px`,
+          width: isMouseOver
+            ? (containerWidth ??
+              `${dateDifference * 12 * (1 + zoomOptions.level / 50)}px`)
+            : `${dateDifference * 12 * (1 + zoomOptions.level / 50)}px`,
           backgroundColor:
             events[eventIndex].color ?? "var(--primary-foreground)",
         }}
         onWheel={(e) => {
           e.stopPropagation();
+        }}
+        onMouseEnter={() => {
+          setIsMouseOver(true);
+        }}
+        onMouseLeave={() => {
+          setIsMouseOver(false);
         }}
       >
         <div className="flex justify-between p-2">
@@ -107,7 +126,10 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
           <div
             className={`w-full ${isEnlarged ? (isImage ? "h-41" : "h-10") : "h-0"} mt-8 duration-300`}
             style={{
-              width: `${dateDifference * 12 * (1 + zoomOptions.level / 50)}px`,
+              width: isMouseOver
+                ? (containerWidth ??
+                  `${dateDifference * 12 * (1 + zoomOptions.level / 50)}px`)
+                : `${dateDifference * 12 * (1 + zoomOptions.level / 50)}px`,
             }}
           >
             {isEnlarged &&
