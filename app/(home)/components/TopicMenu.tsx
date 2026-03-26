@@ -24,6 +24,7 @@ import BracketIcon from "@/assets/icons/brackets.svg";
 import Image from "next/image";
 import Tooltip from "@/global/components/Tooltip";
 import { handleFileUpload } from "@/data/import";
+import { useDrive } from "@/hooks/useDrive";
 
 const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const {
@@ -34,6 +35,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
     dateSelection,
     setError,
     timelineRulerRef,
+    setLastUpdatedToDrive,
   } = TimelineStore();
   const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
@@ -43,6 +45,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
   const [downloadTimeline, setDownloadTimeline] = useState<
     Timeline | undefined
   >();
+  const { saveData } = useDrive();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -123,7 +126,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                       onChange={(e) =>
                         handleFileUpload(
                           e,
-                          (value) => {
+                          async (value) => {
                             if (
                               timelines.filter(
                                 (timeline) => timeline.id === value.id,
@@ -133,8 +136,16 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                               setTimeout(() => setError(undefined), 5000);
                               return;
                             }
+                            const updatedTimelines = [...timelines, value];
+                            setTimelines(updatedTimelines);
 
-                            setTimelines([...timelines, value]);
+                            const result = await saveData(updatedTimelines);
+
+                            if (result) {
+                              setLastUpdatedToDrive(
+                                new Date(result.modifiedTime),
+                              );
+                            }
                           },
                           (error) => {
                             setError(error);
@@ -193,20 +204,29 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                       <Tooltip
                         children={
                           <CheckCircleIcon
-                            onClick={() => {
+                            onClick={async () => {
                               if (editingTimeline.name.trim() === "") {
                                 setIsNameInvalid(true);
                                 return;
                               }
 
-                              setTimelines(
-                                timelines.map((timeline) =>
+                              const updatedTimelines = timelines.map(
+                                (timeline) =>
                                   timeline.id === editingTimeline.id
                                     ? editingTimeline
                                     : timeline,
-                                ),
                               );
+
+                              setTimelines(updatedTimelines);
                               setEditingTimeline(undefined);
+
+                              const result = await saveData(updatedTimelines);
+
+                              if (result) {
+                                setLastUpdatedToDrive(
+                                  new Date(result.modifiedTime),
+                                );
+                              }
                             }}
                             className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                           />
@@ -217,15 +237,23 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
                       <Tooltip
                         children={
                           <TrashIcon
-                            onClick={() => {
-                              setTimelines(
-                                timelines.filter(
-                                  (prevTimeline) =>
-                                    prevTimeline.id !== timeline.id,
-                                ),
+                            onClick={async () => {
+                              const updatedTimelines = timelines.filter(
+                                (prevTimeline) =>
+                                  prevTimeline.id !== timeline.id,
                               );
+
+                              setTimelines(updatedTimelines);
                               setSelectedTimeline(null);
                               setEditingTimeline(undefined);
+
+                              const result = await saveData(updatedTimelines);
+
+                              if (result) {
+                                setLastUpdatedToDrive(
+                                  new Date(result.modifiedTime),
+                                );
+                              }
                             }}
                             className="w-7 h-7 hover:bg-(--secondary-foreground)/30 active:bg-(--secondary-foreground)/50 transition-all duration-100 rounded-md p-1"
                           />
