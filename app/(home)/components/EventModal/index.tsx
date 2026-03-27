@@ -24,6 +24,7 @@ const EventModal = () => {
     timelines,
     setTimelines,
     setLastUpdatedToDrive,
+    setError,
   } = TimelineStore();
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
@@ -89,7 +90,7 @@ const EventModal = () => {
   const onSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const result = validateInputs(title, startDate, link, endDate);
-
+    console.log(result);
     setErrors(result);
 
     if (result.hasErrors) {
@@ -128,6 +129,7 @@ const EventModal = () => {
         return timeline;
       });
 
+      console.log(newTimelines);
       setTimelines(newTimelines);
       setSelectedTimeline(selectedTimeline);
 
@@ -137,6 +139,8 @@ const EventModal = () => {
           setLastUpdatedToDrive(new Date(result.modifiedTime));
         }
       }
+    } else {
+      setError("No timeline selected");
     }
 
     setIsEventModalOpen(false);
