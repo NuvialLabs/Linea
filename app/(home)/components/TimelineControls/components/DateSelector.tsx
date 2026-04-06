@@ -68,18 +68,16 @@ const DateSelector = () => {
 
   return (
     <div className="grid sm:justify-items-center">
-      <div className="grid justify-items-center text-(--accent) cursor-pointer">
-        <h1
-          onClick={() =>
-            setDateSelection({
-              ...dateSelection,
-              isMenuExpanded: !dateSelection.isMenuExpanded,
-            })
-          }
-          className="text-[24px]"
-        >
-          {dateSelection.year.toString()}
-        </h1>
+      <div
+        onClick={() =>
+          setDateSelection({
+            ...dateSelection,
+            isMenuExpanded: !dateSelection.isMenuExpanded,
+          })
+        }
+        className="grid justify-items-center text-(--accent) cursor-pointer"
+      >
+        <h1 className="text-[24px]">{dateSelection.year.toString()}</h1>
         <h1>
           {dateSelection.month !== undefined &&
             MONTHS[dateSelection.month - 1] !== undefined &&

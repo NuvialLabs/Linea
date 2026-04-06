@@ -46,7 +46,7 @@ const DateTick = ({
       >
         <div className="relative group/add-mark">
           <div
-            className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent)" : "h-9 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 group-hover/add-mark:opacity-0 rounded-t-full cursor-pointer duration-300 transition-all`}
+            className={`w-1 ${yearHasStarted ? "h-16 bg-(--accent) w-2" : "h-9 bg-(--secondary-foreground)/20"} group-hover/date-tick:bg-(--accent) group-hover/date-tick:scale-y-150 group-hover/add-mark:opacity-0 rounded-t-full cursor-pointer duration-300 transition-all`}
           />
           <SelectMark top="top-0" isSelected={false} date={date} />
           <AddMark top="top-6" date={date} />

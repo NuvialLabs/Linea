@@ -24,6 +24,7 @@ const EventModal = () => {
     timelines,
     setTimelines,
     setLastUpdatedToDrive,
+    setDateSelection,
     setError,
   } = TimelineStore();
   const [title, setTitle] = useState("");
@@ -90,7 +91,7 @@ const EventModal = () => {
   const onSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const result = validateInputs(title, startDate, link, endDate);
-    console.log(result);
+
     setErrors(result);
 
     if (result.hasErrors) {
@@ -129,9 +130,13 @@ const EventModal = () => {
         return timeline;
       });
 
-      console.log(newTimelines);
       setTimelines(newTimelines);
       setSelectedTimeline(selectedTimeline);
+      setDateSelection({
+        month: newEvent.initialDate.getMonth() + 1,
+        year: newEvent.initialDate.getFullYear(),
+        isMenuExpanded: false,
+      });
 
       if (session) {
         const result = await saveData(timelines);

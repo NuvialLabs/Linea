@@ -1,13 +1,15 @@
 import TimelineStore from "@/stores/timeline-store";
 import { addDays, differenceInDays } from "@/utils/date_methods";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { IntervalMark, PointMark } from "../Marks";
 import DateTick from "./components/DateTick";
+import { slideToDate } from "@/utils/slider_methods";
 
 const Timeline = () => {
   const {
     startDate,
     endDate,
+    dateSelection,
     onPointerDown,
     onPointerMove,
     onPointerUp,
@@ -57,6 +59,65 @@ const Timeline = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      slideToDate(() => {}, dateSelection.month, dateSelection.year);
+    }, 300);
+  }, [dateSelection.year]);
+
+  const checkRenderingTimelineRange = (date: Date) => {
+    const previousYears = dateSelection.year - 5;
+    const nextYears = dateSelection.year + 5;
+    const currentYear = date.getFullYear();
+
+    return currentYear >= previousYears && currentYear <= nextYears;
+  };
+
+  const hasEventOnDate = (date: Date, index: number) => {
+    const yearHasStarted = date.getMonth() === 0 && date.getDate() === 1;
+    const pointEvents =
+      selectedTimeline?.events.filter(
+        (event) =>
+          event.initialDate.getDate() === date.getDate() &&
+          event.initialDate.getMonth() === date.getMonth() &&
+          event.initialDate.getFullYear() === date.getFullYear() &&
+          !event.endDate,
+      ) ?? [];
+    const intervalEvents =
+      selectedTimeline?.events.filter(
+        (event) =>
+          event.initialDate.getDate() === date.getDate() &&
+          event.initialDate.getMonth() === date.getMonth() &&
+          event.initialDate.getFullYear() === date.getFullYear() &&
+          event.endDate,
+      ) ?? [];
+    const hasEvents = pointEvents.length > 0 || intervalEvents.length > 0;
+
+    return hasEvents ? (
+      <Fragment key={date.toISOString().split("T")[0]}>
+        {pointEvents.length > 0 && (
+          <PointMark
+            key={`${date.toISOString().split("T")[0]}-point`}
+            events={pointEvents ?? []}
+          />
+        )}
+        {intervalEvents.length > 0 && (
+          <IntervalMark
+            key={`${date.toISOString().split("T")[0]}-interval`}
+            events={intervalEvents ?? []}
+          />
+        )}
+      </Fragment>
+    ) : (
+      <DateTick
+        key={date.toISOString().split("T")[0]}
+        date={date}
+        yearHasStarted={yearHasStarted}
+        isPeak={index % 10 === 0}
+      />
+    );
+  };
+
   return (
     <section
       ref={ref}
@@ -69,51 +130,13 @@ const Timeline = () => {
       <div className="relative w-full ">
         <div key="timeline" className="flex items-end px-2">
           {Array.from(
-            { length: differenceInDays(startDate, endDate) + 1 }, //FIXME: Optimize rendering
+            { length: differenceInDays(startDate, endDate) + 1 },
             (_, index) => {
               const date = addDays(index, startDate);
-              const yearHasStarted =
-                date.getMonth() === 0 && date.getDate() === 1;
-              const pointEvents =
-                selectedTimeline?.events.filter(
-                  (event) =>
-                    event.initialDate.getDate() === date.getDate() &&
-                    event.initialDate.getMonth() === date.getMonth() &&
-                    event.initialDate.getFullYear() === date.getFullYear() &&
-                    !event.endDate,
-                ) ?? [];
-              const intervalEvents =
-                selectedTimeline?.events.filter(
-                  (event) =>
-                    event.initialDate.getDate() === date.getDate() &&
-                    event.initialDate.getMonth() === date.getMonth() &&
-                    event.initialDate.getFullYear() === date.getFullYear() &&
-                    event.endDate,
-                ) ?? [];
 
-              return pointEvents.length > 0 || intervalEvents.length > 0 ? (
-                <Fragment key={date.toISOString().split("T")[0]}>
-                  {pointEvents.length > 0 && (
-                    <PointMark
-                      key={`${date.toISOString().split("T")[0]}-point`}
-                      events={pointEvents ?? []}
-                    />
-                  )}
-                  {intervalEvents.length > 0 && (
-                    <IntervalMark
-                      key={`${date.toISOString().split("T")[0]}-interval`}
-                      events={intervalEvents ?? []}
-                    />
-                  )}
-                </Fragment>
-              ) : (
-                <DateTick
-                  key={date.toISOString().split("T")[0]}
-                  date={date}
-                  yearHasStarted={yearHasStarted}
-                  isPeak={index % 10 === 0}
-                />
-              );
+              if (!checkRenderingTimelineRange(date)) return null;
+
+              return hasEventOnDate(date, index);
             },
           )}
         </div>

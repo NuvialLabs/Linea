@@ -61,7 +61,6 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
     setTimeout(() => {
       if (!intervalRef.current) return;
 
-      console.log(intervalRef.current.offsetWidth);
       setContainerWidth(
         intervalRef.current.offsetWidth < 100 ? "100%" : undefined,
       );

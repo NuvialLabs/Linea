@@ -54,7 +54,7 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
     if (timelines && timelines.length > 0) {
       //TODO: Implement timeline selection for embedded view
       //TODO: Improve logic when data is loaded from importing, logging in, etc
-      const timeline = timelines[0];
+      const timeline = timelines[timelines.length - 1];
 
       selectTimeline(timeline);
     }
@@ -100,14 +100,13 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => {
-                  setTimelines([
-                    ...timelines,
-                    {
-                      id: crypto.randomUUID(),
-                      name: `Timeline ${timelines.length + 1}`,
-                      events: [],
-                    },
-                  ]);
+                  const newTimeline = {
+                    id: crypto.randomUUID(),
+                    name: `Timeline ${timelines.length + 1}`,
+                    events: [],
+                  };
+                  setTimelines([...timelines, newTimeline]);
+                  setIsMenuExpanded(false);
                 }}
                 className="flex justify-center items-center gap-4 bg-(--accent) rounded-xl p-2 text-(--background) w-31.25 h-10 text-[10px] cursor-pointer hover:bg-(--accent)/90 active:bg-(--accent)/50 transition-all duration-200"
               >
