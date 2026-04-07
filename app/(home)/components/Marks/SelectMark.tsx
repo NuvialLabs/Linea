@@ -61,7 +61,12 @@ const SelectMark = ({
     const response = await fetch("/api/embed", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: selectedEvents }),
+      body: JSON.stringify({
+        data: {
+          ...selectedTimeline,
+          events: selectedEvents,
+        },
+      }),
     });
 
     const { id } = await response.json();
