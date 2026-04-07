@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@vercel/kv": "^3.0.0",
     "googleapis": "^171.4.0",
     "html-to-image": "^1.11.13",
     "http-status-codes": "^2.3.0",

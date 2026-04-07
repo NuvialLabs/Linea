@@ -1,6 +1,6 @@
 import TimelineStore from "@/stores/timeline-store";
 import { addDays, differenceInDays } from "@/utils/date_methods";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { IntervalMark, PointMark } from "../Marks";
 import DateTick from "./components/DateTick";
 import { slideToDate } from "@/utils/slider_methods";

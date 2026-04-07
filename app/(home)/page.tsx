@@ -14,6 +14,7 @@ import { useDrive } from "@/hooks/useDrive";
 import { checkIfSameDate } from "@/utils/date_methods";
 import { Timeline as TimelineType } from "@/global/types";
 import { Oval } from "react-loader-spinner";
+import CodeSnippet from "./components/CodeSnippet";
 
 export default function Home() {
   const {
@@ -191,6 +192,7 @@ export default function Home() {
       </div>
 
       <EventModal />
+      <CodeSnippet />
     </main>
   );
 }

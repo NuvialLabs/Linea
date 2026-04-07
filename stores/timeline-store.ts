@@ -40,6 +40,8 @@ interface TimelineStore {
   }) => void;
   initialDate?: Date;
   setInitialDate: (date?: Date) => void;
+  embedUrl?: string;
+  setEmbedUrl: (url?: string) => void;
   isEventModalOpen: boolean;
   lastUpdatedToDrive?: Date;
   setLastUpdatedToDrive: (date?: Date) => void;
@@ -117,6 +119,9 @@ export default create<TimelineStore>((set, get) => ({
   initialDate: undefined,
   setInitialDate(date?: Date) {
     set({ initialDate: date });
+  },
+  setEmbedUrl(url?: string) {
+    set({ embedUrl: url });
   },
   isEventModalOpen: false,
   editingEvent: undefined,

@@ -18,8 +18,13 @@ const SelectMark = ({
   isSelected: boolean;
   date: Date;
 }) => {
-  const { setSelectionInterval, selectionInterval, zoomOptions } =
-    TimelineStore();
+  const {
+    setSelectionInterval,
+    selectionInterval,
+    zoomOptions,
+    selectedTimeline,
+    setEmbedUrl,
+  } = TimelineStore();
   const [width, setWidth] = useState(0);
   const { start, end } = selectionInterval;
 
@@ -40,6 +45,29 @@ const SelectMark = ({
   useEffect(() => {
     setWidth(getWidth());
   }, [selectionInterval, zoomOptions.level]);
+
+  const embedSelectedTimeline = async () => {
+    if (!selectedTimeline) return;
+
+    const { events } = selectedTimeline;
+    const selectedEvents = events.filter((event) => {
+      const eventDate = new Date(event.initialDate);
+
+      return (
+        eventDate >= (start ?? new Date(0)) && eventDate <= (end ?? new Date())
+      );
+    });
+
+    const response = await fetch("/api/embed", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: selectedEvents }),
+    });
+
+    const { id } = await response.json();
+    const embedUrl = `${window.location.origin}/embed/${id}`;
+    setEmbedUrl(embedUrl);
+  };
 
   return !isSelected ? (
     <div
@@ -140,7 +168,10 @@ const SelectMark = ({
               />
               <Tooltip
                 children={
-                  <CodeBracketIcon className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2" />
+                  <CodeBracketIcon
+                    onMouseDown={embedSelectedTimeline}
+                    className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
+                  />
                 }
                 tooltip="Embed"
               />
