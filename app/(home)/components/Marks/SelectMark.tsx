@@ -8,6 +8,12 @@ import TimelineStore from "@/stores/timeline-store";
 import { useEffect, useState } from "react";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import Tooltip from "@/global/components/Tooltip";
+import Image from "next/image";
+import { exportJson, exportExcel } from "@/data/export";
+import BracketIcon from "@/assets/icons/brackets.svg";
+import { TableCellsIcon, PhotoIcon } from "@heroicons/react/24/solid";
+import { Timeline } from "@/global/types";
+import { slideToDate } from "@/utils/slider_methods";
 
 const SelectMark = ({
   top,
@@ -26,6 +32,7 @@ const SelectMark = ({
     setEmbedUrl,
   } = TimelineStore();
   const [width, setWidth] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
   const { start, end } = selectionInterval;
 
   const getWidth = () => {
@@ -46,8 +53,8 @@ const SelectMark = ({
     setWidth(getWidth());
   }, [selectionInterval, zoomOptions.level]);
 
-  const embedSelectedTimeline = async () => {
-    if (!selectedTimeline) return;
+  const prepareData = () => {
+    if (!selectedTimeline) return undefined;
 
     const { events } = selectedTimeline;
     const selectedEvents = events.filter((event) => {
@@ -58,14 +65,22 @@ const SelectMark = ({
       );
     });
 
+    return {
+      ...selectedTimeline,
+      events: selectedEvents,
+    };
+  };
+
+  const embedSelectedTimeline = async () => {
+    const data = prepareData();
+
+    if (!data) return;
+
     const response = await fetch("/api/embed", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        data: {
-          ...selectedTimeline,
-          events: selectedEvents,
-        },
+        data,
       }),
     });
 
@@ -164,26 +179,75 @@ const SelectMark = ({
           />
 
           {end && (
-            <div className="flex gap-2 justify-center mt-2">
-              <Tooltip
-                children={
-                  <ArrowTopRightOnSquareIcon className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2" />
-                }
-                tooltip="Export"
-              />
-              <Tooltip
-                children={
-                  <CodeBracketIcon
-                    onMouseDown={embedSelectedTimeline}
-                    className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
+            <div className="flex flex-wrap gap-2 justify-center mt-2">
+              {isExporting ? (
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Tooltip
+                    children={
+                      <Image
+                        src={BracketIcon}
+                        alt="Bracket Icon"
+                        onMouseDown={() => {
+                          const data = prepareData();
+
+                          if (data) {
+                            exportJson(data);
+                          }
+                        }}
+                        className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
+                      />
+                    }
+                    tooltip="JSON"
                   />
-                }
-                tooltip="Embed"
-              />
+
+                  <Tooltip
+                    children={
+                      <TableCellsIcon
+                        onMouseDown={() => {
+                          const data = prepareData();
+
+                          if (data) {
+                            exportExcel(data);
+                          }
+                        }}
+                        className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
+                      />
+                    }
+                    tooltip="Sheet"
+                  />
+                </div>
+              ) : (
+                <div className="flex gap-2 justify-center">
+                  <Tooltip
+                    children={
+                      <ArrowTopRightOnSquareIcon
+                        onMouseDown={() => {
+                          setIsExporting(true);
+                        }}
+                        className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
+                      />
+                    }
+                    tooltip="Export"
+                  />
+                  <Tooltip
+                    children={
+                      <CodeBracketIcon
+                        onMouseDown={embedSelectedTimeline}
+                        className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
+                      />
+                    }
+                    tooltip="Embed"
+                  />
+                </div>
+              )}
 
               <XCircleIcon
                 onMouseDown={() => {
-                  setSelectionInterval({ start: null, end: null });
+                  if (isExporting) {
+                    setIsExporting(false);
+                  } else {
+                    setSelectionInterval({ start: null, end: null });
+                  }
                 }}
                 className="w-8 h-8 text-white cursor-pointer rounded-full hover:bg-white/20 active:bg-white/50 p-2"
               />
