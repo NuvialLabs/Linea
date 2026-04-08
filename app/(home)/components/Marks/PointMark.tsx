@@ -39,7 +39,7 @@ const PointMark = ({ events }: { events: Event[] }) => {
   const currentEvent = events[eventIndex];
   const isExpandable =
     (currentEvent?.description?.length ?? 0) > 82 ||
-    currentEvent.link !== undefined;
+    (currentEvent.link?.length ?? 0) > 30;
 
   useEffect(() => {
     if (currentEvent.link) {
