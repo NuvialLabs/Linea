@@ -52,8 +52,6 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
 
   useEffect(() => {
     if (timelines && timelines.length > 0) {
-      //TODO: Implement timeline selection for embedded view
-      //TODO: Improve logic when data is loaded from importing, logging in, etc
       const timeline = timelines[timelines.length - 1];
 
       selectTimeline(timeline);
