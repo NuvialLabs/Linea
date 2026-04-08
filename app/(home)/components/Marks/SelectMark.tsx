@@ -11,9 +11,7 @@ import Tooltip from "@/global/components/Tooltip";
 import Image from "next/image";
 import { exportJson, exportExcel } from "@/data/export";
 import BracketIcon from "@/assets/icons/brackets.svg";
-import { TableCellsIcon, PhotoIcon } from "@heroicons/react/24/solid";
-import { Timeline } from "@/global/types";
-import { slideToDate } from "@/utils/slider_methods";
+import { TableCellsIcon } from "@heroicons/react/24/solid";
 
 const SelectMark = ({
   top,

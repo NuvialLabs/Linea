@@ -1,9 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import GoogleCalendar from "@/assets/icons/google-calendar.webp";
-import AppleCalendar from "@/assets/icons/apple-calendar.webp";
 import OutlookCalendar from "@/assets/icons/outlook-calendar.webp";
-import NotionCalendar from "@/assets/icons/notion-calendar.webp";
 import { signOut } from "next-auth/react";
 import { checkIfSameDate } from "@/utils/date_methods";
 import { useDrive } from "@/hooks/useDrive";
@@ -12,6 +10,8 @@ import { Oval } from "react-loader-spinner";
 import { COLORS } from "@/global/constants";
 import Spinner from "@/global/components/Spinner";
 import { Event } from "@/global/types";
+import DefaultTheme from "@/assets/images/default-theme.png";
+import PlaceholderTheme from "@/assets/images/placeholder-theme.png";
 
 const SettingsPanel = () => {
   const { timelines, setTimelines, lastUpdatedToDrive, setLastUpdatedToDrive } =
@@ -22,7 +22,13 @@ const SettingsPanel = () => {
     useState(false);
   const [isFetchingOutlookCalendar, setIsFetchingOutlookCalendar] =
     useState(false);
-  const themes = ["", "", ""];
+  const themes = [
+    {
+      source: DefaultTheme,
+      isPlaceholder: false,
+    },
+    { source: PlaceholderTheme, isPlaceholder: true },
+  ];
 
   const fetchGoogleCalendar = async () => {
     try {
@@ -152,14 +158,28 @@ const SettingsPanel = () => {
         <h1 className="text-2xl text-(--accent)">Theme</h1>
 
         <div className="flex mt-4 gap-4 w-full">
-          {themes.map((_, index) => (
+          {themes.map((theme, index) => (
             <div
               key={`theme-${index}`}
               onMouseDown={() => {
+                if (theme.isPlaceholder) return;
+
                 setSelectedTheme(index);
               }}
-              className={`max-w-65 min-w-65 h-37.5 bg-(--secondary-foreground)/20 rounded-xl ${selectedTheme === index ? "border-2 border-(--accent)" : ""}`}
-            ></div>
+              className={`max-w-65 min-w-65 h-37.5 bg-(--secondary-foreground)/20 rounded-xl ${selectedTheme === index ? "border-2 border-(--accent)" : ""} ${theme.isPlaceholder ? "cursor-not-allowed" : "cursor-pointer"} relative`}
+            >
+              <Image
+                src={theme.source}
+                alt="Theme"
+                className="w-full h-full object-cover rounded-xl"
+              />
+
+              {theme.isPlaceholder && (
+                <div className="absolute inset-0 bg-(--secondary-background)/60 rounded-xl grid place-items-center">
+                  (<h1 className="text-(--accent) text-2xl">Coming Soon</h1>)
+                </div>
+              )}
+            </div>
           ))}
         </div>
 
