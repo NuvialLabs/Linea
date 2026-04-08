@@ -146,6 +146,10 @@ const EventModal = () => {
       }
     } else {
       setError("No timeline selected");
+
+      setTimeout(() => {
+        setError(undefined);
+      }, 5000);
     }
 
     setIsEventModalOpen(false);
