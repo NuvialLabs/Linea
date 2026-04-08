@@ -15,7 +15,7 @@ import { checkIfImage, onAttachementClick } from "./utils";
 import { useDrive } from "@/hooks/useDrive";
 import { useSession } from "next-auth/react";
 
-const PointMark = ({ events }: { events: Event[] }) => {
+const PointMark = ({ id, events }: { id: string; events: Event[] }) => {
   const {
     zoomOptions,
     timelines,
@@ -51,6 +51,7 @@ const PointMark = ({ events }: { events: Event[] }) => {
 
   return (
     <div
+      id={id}
       className="relative h-19 w-4 grid place-items-center group"
       style={{ marginInline: `${2 + (zoomOptions.level - 1) * (18 / 99)}px` }}
     >

@@ -33,7 +33,6 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
     selectedTimeline,
     setTimelines,
     setSelectedTimeline,
-    dateSelection,
     setError,
     timelineRulerRef,
     setLastUpdatedToDrive,
@@ -58,15 +57,37 @@ const TopicMenu = ({ isEmbedded }: { isEmbedded: boolean }) => {
     }
   }, [timelines]);
 
+  useEffect(() => {
+    if (selectedTimeline) {
+      scrollTimeline(selectedTimeline);
+    }
+  }, [selectedTimeline]);
+
   const selectTimeline = async (timeline: Timeline) => {
     setSelectedTimeline(timeline);
 
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        slideToDate(setError, dateSelection.month, dateSelection.year);
-        resolve(true);
-      }, 100); //FIXME: Optimize - Slide once all marks are rendered
-    });
+    scrollTimeline(timeline);
+  };
+
+  const scrollTimeline = async (timeline: Timeline) => {
+    const latestEvent = timeline.events[0].initialDate;
+    const pointEvent = `${latestEvent.toISOString().split("T")[0]}-point`;
+    const intervalEvent = `${latestEvent.toISOString().split("T")[0]}-interval`;
+
+    let pointElement = document.getElementById(pointEvent);
+    let intervalElement = document.getElementById(intervalEvent);
+
+    while (pointElement === null && intervalElement === null) {
+      pointElement = document.getElementById(pointEvent);
+      intervalElement = document.getElementById(intervalEvent);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+
+    slideToDate(
+      setError,
+      latestEvent.getMonth() + 1,
+      latestEvent.getFullYear(),
+    );
   };
 
   return (

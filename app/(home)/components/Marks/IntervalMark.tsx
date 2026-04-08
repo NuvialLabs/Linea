@@ -15,7 +15,7 @@ import { differenceInDays } from "@/utils/date_methods";
 import { useDrive } from "@/hooks/useDrive";
 import { useSession } from "next-auth/react";
 
-const IntervalMark = ({ events }: { events: Event[] }) => {
+const IntervalMark = ({ id, events }: { id: string; events: Event[] }) => {
   const {
     zoomOptions,
     timelines,
@@ -68,7 +68,7 @@ const IntervalMark = ({ events }: { events: Event[] }) => {
   }, [eventIndex, isEnlarged]);
 
   return (
-    <div className="relative group">
+    <div id={id} className="relative group">
       <div className="grid justify-items-center gap-2 absolute z-30 -top-12 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <h1 className="text-(--secondary-foreground)/70 text-xs text-center)">{`${currentEvent.initialDate.getMonth() + 1}/${currentEvent.initialDate.getDate()} - ${currentEvent.endDate!.getMonth() + 1}/${currentEvent.endDate!.getDate()}`}</h1>
         {events.length > 1 && (

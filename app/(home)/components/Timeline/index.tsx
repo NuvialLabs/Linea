@@ -97,12 +97,14 @@ const Timeline = () => {
       <Fragment key={date.toISOString().split("T")[0]}>
         {pointEvents.length > 0 && (
           <PointMark
+            id={`${date.toISOString().split("T")[0]}-point`}
             key={`${date.toISOString().split("T")[0]}-point`}
             events={pointEvents ?? []}
           />
         )}
         {intervalEvents.length > 0 && (
           <IntervalMark
+            id={`${date.toISOString().split("T")[0]}-interval`}
             key={`${date.toISOString().split("T")[0]}-interval`}
             events={intervalEvents ?? []}
           />

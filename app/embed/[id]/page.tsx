@@ -12,7 +12,7 @@ import { slideToDate } from "@/utils/slider_methods";
 import { useParams } from "next/navigation";
 
 export default function EmbeddedWindow() {
-  const { setSelectedTimeline, setError, dateSelection } = TimelineStore();
+  const { setSelectedTimeline, setError } = TimelineStore();
   const id = useParams().id;
 
   useEffect(() => {
@@ -52,12 +52,24 @@ export default function EmbeddedWindow() {
       }) as Event[],
     });
 
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        slideToDate(setError, dateSelection.month, dateSelection.year);
-        resolve(true);
-      }, 100); //FIXME: Optimize - Slide once all marks are rendered
-    });
+    const latestEvent = timeline.events[0].initialDate;
+    const pointEvent = `${latestEvent.toISOString().split("T")[0]}-point`;
+    const intervalEvent = `${latestEvent.toISOString().split("T")[0]}-interval`;
+
+    let pointElement = document.getElementById(pointEvent);
+    let intervalElement = document.getElementById(intervalEvent);
+
+    while (pointElement === null && intervalElement === null) {
+      pointElement = document.getElementById(pointEvent);
+      intervalElement = document.getElementById(intervalEvent);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+
+    slideToDate(
+      setError,
+      latestEvent.getMonth() + 1,
+      latestEvent.getFullYear(),
+    );
   };
 
   return (
